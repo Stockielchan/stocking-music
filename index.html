@@ -18,7 +18,6 @@
             --color-stocking: #c39dff;
             --color-pink: #ff87ab;
             --color-cyan: #00e5ff;
-            --color-green: #7dffc1;
             --color-text: #333;
             --color-text-light: #555;
             --color-heading: #222;
@@ -65,7 +64,7 @@
             font-size: clamp(3rem, 12vw, 9rem);
             line-height: 1; font-weight: 900; margin-bottom: 0.3em;
         }
-        .title-panty { background: linear-gradient(120deg, #ffea7f, #ff87ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }  
+        .title-panty { background: linear-gradient(120deg, #ffea7f, #ff87ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .title-stocking { background: linear-gradient(120deg, #c39dff, #ff87ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { font-size: 0.95rem; color: var(--color-text-light); font-weight: 500; opacity: 0.9; }
         .golden-divider {
@@ -80,40 +79,19 @@
         }
         .content-section:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); transform: translateY(-2px); }
 
-        /* ==================== 按钮系统 (保证大小一致) ==================== */
+        /* 按钮组 */
         .button-group { 
-            display: flex; 
-            gap: 1rem; 
-            margin-top: 1.5rem; 
-            flex-wrap: wrap; 
-            justify-content: center; /* 居中对齐 */
+            display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; justify-content: center; 
         }
-        
         .btn {
-            flex: 1; /* 让所有按钮平分宽度 */
-            min-width: 160px; /* 最小宽度限制 */
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 0.6em; 
-            padding: 1em 1.5em; /* 统一内边距 */
-            font-weight: 700; 
-            color: white;
-            border: none; 
-            border-radius: var(--radius-sm); 
-            cursor: pointer; 
-            transition: 0.2s;
-            text-decoration: none; 
-            position: relative; 
-            overflow: hidden;
-            font-size: 1rem; /* 统一字体大小 */
-            box-sizing: border-box; /* 确保边框不影响大小 */
-            height: 56px; /* 强制统一高度 */
+            flex: 1; min-width: 160px; display: inline-flex; align-items: center; justify-content: center;
+            gap: 0.6em; padding: 1em 1.5em; font-weight: 700; color: white;
+            border: none; border-radius: var(--radius-sm); cursor: pointer; transition: 0.2s;
+            text-decoration: none; position: relative; overflow: hidden; font-size: 1rem;
+            box-sizing: border-box; height: 56px;
         }
-        
         .btn-primary { background: linear-gradient(120deg, var(--color-pink), var(--color-cyan)); }
         .btn-secondary { background: linear-gradient(120deg, var(--color-panty), var(--color-pink)); }
-        
         .btn:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .btn:active { transform: translateY(-1px); }
         .btn-icon { width: 1.4em; height: 1.4em; }
@@ -216,6 +194,8 @@
 
         .minimize-btn { position: absolute; top: 5px; right: 8px; font-size: 1.2rem; color: #888; background: none; border: none; z-index: 10; }
         .music-widget.collapsed .minimize-btn { display: none; }
+        
+        .url-code-block { display: none; } 
     </style>
 </head>
 <body>
@@ -255,14 +235,11 @@
             <h3>🔗 获取角色卡</h3>
             <p>点击下方链接访问发布帖子，或直接复制链接分享给朋友。</p>
             
-            <!-- 按钮组 (已修正为两个大小一致的按钮) -->
             <div class="button-group">
-                <!-- 蓝紫色按钮：复制固定链接 -->
                 <button class="btn btn-primary" id="mainCopyBtn">
                     <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                     <span>复制链接</span>
                 </button>
-                <!-- 黄粉色按钮：前往帖子 (链接已更新) -->
                 <a href="https://discord.com/channels/1134557553011998840/1434325852165902366" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
                     <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
                     <span>前往帖子</span>
@@ -333,13 +310,13 @@
         </div>
     </main>
 
-    <!-- 🎵 悬浮播放器 V3 -->
+    <!-- 🎵 悬浮播放器 -->
     <div class="music-widget expanded" id="musicWidget">
         <button class="minimize-btn" id="minimizeBtn" title="最小化">−</button>
         <div class="player-header">
             <div class="music-disc" id="disc">♪</div>
             <div class="player-content">
-                <div class="song-title" id="songTitle">Connecting GitHub...</div>
+                <div class="song-title" id="songTitle">Connecting...</div>
                 <div class="controls-row">
                     <button class="ctrl-btn" id="modeBtn" title="切换模式">🔁</button>
                     <button class="ctrl-btn" id="prevBtn">⏮</button>
@@ -357,9 +334,7 @@
         /* ==================== UI 交互管理器 ==================== */
         class UIManager {
             constructor() {
-                // ⚠️ 硬编码要复制的链接 ⚠️
                 this.targetUrl = "https://discord.com/channels/1134557553011998840/1434325852165902366";
-                
                 this.creditClickCounts = {};
                 this.burstCooldown = 0;
                 this.init();
@@ -372,75 +347,64 @@
                 this.setupAccessibility();
             }
 
-            /* 1. 复制按钮逻辑 (增强兼容性版) */
             bindMainCopyButton() {
                 const mainBtn = document.getElementById('mainCopyBtn');
                 if (mainBtn) {
                     mainBtn.addEventListener('click', (e) => {
-                        e.preventDefault(); // 防止可能的默认行为
+                        e.preventDefault();
                         this.copyTextToClipboard(this.targetUrl, mainBtn);
                     });
                 }
             }
 
-            /* 强力复制函数 */
             copyTextToClipboard(text, btnElement) {
-                // 优先尝试现代 API
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(text)
                         .then(() => this.handleCopySuccess(btnElement))
                         .catch(() => this.fallbackCopy(text, btnElement));
                 } else {
-                    // 降级方案 (用于本地文件或旧浏览器)
                     this.fallbackCopy(text, btnElement);
                 }
             }
 
-            /* 备用复制方案 */
             fallbackCopy(text, btnElement) {
                 try {
                     const textArea = document.createElement("textarea");
                     textArea.value = text;
-                    // 设为不可见，但必须在可视区域内才能被选中
                     textArea.style.position = "fixed";
                     textArea.style.left = "-9999px";
                     textArea.style.top = "0";
                     document.body.appendChild(textArea);
                     textArea.focus();
                     textArea.select();
-                    
                     const successful = document.execCommand('copy');
                     document.body.removeChild(textArea);
-                    
                     if (successful) {
                         this.handleCopySuccess(btnElement);
                     } else {
-                        this.showToast('❌ 浏览器限制，请长按链接复制');
+                        this.showToast('❌ 复制失败');
                     }
                 } catch (err) {
                     this.showToast('❌ 复制失败');
                 }
             }
 
-            /* 复制成功反馈 */
             handleCopySuccess(btn) {
                 this.showToast('✅ 链接已复制');
                 if (btn) {
-                    const originalHtml = btn.innerHTML;
                     const span = btn.querySelector('span');
-                    
-                    if (span) span.textContent = '已复制！';
-                    btn.style.background = 'linear-gradient(120deg, var(--color-green), #5cffac)'; // 变绿
-                    
-                    setTimeout(() => {
-                        btn.style.background = ''; // 恢复原色
-                        if (span) span.textContent = '复制链接';
-                        else btn.innerHTML = originalHtml;
-                    }, 2000);
+                    if (span) {
+                        const originalText = span.textContent;
+                        span.textContent = '已复制！';
+                        btn.style.background = 'linear-gradient(120deg, var(--color-green), #5cffac)';
+                        setTimeout(() => {
+                            btn.style.background = '';
+                            span.textContent = originalText;
+                        }, 2000);
+                    }
                 }
             }
 
-            /* 2. 心形特效 */
             initHearts() {
                 document.addEventListener('click', (e) => {
                     if (e.target.closest('.music-widget') || e.target.closest('button') || e.target.closest('.credit-item')) return;
@@ -458,17 +422,14 @@
                 setTimeout(() => heart.remove(), 1000);
             }
 
-            /* 3. 鸣谢彩蛋 */
             setupCreditEggs() {
                 const items = document.querySelectorAll('.credit-item');
                 items.forEach(item => {
                     const name = item.textContent.trim();
                     this.creditClickCounts[name] = 0;
-
                     item.addEventListener('click', (e) => {
                         e.stopPropagation();
                         this.creditClickCounts[name]++;
-
                         if (this.creditClickCounts[name] >= 6) {
                             if (this.burstCooldown === 0) {
                                 this.createBurst(e);
@@ -537,16 +498,13 @@
             }
         }
 
-        /* ==================== 🎵 音乐播放器管理器 ==================== */
+        /* ==================== 🎵 音乐播放器管理器 (热更新版) ==================== */
         class MusicManager {
             constructor() {
-                // GitHub 配置
-                this.githubConfig = {
-                    username: 'Stockielchan',  
-                    repo: 'stocking-music',
-                    folder: '',
-                    branch: 'main'
-                };
+                // GitHub Pages 基础地址
+                this.baseUrl = "https://stockielchan.github.io/stocking-music/";
+                // JSON 文件名
+                this.jsonUrl = this.baseUrl + "music.json?t=" + new Date().getTime(); // 加时间戳防缓存
 
                 this.widget = document.getElementById('musicWidget');
                 this.audio = document.getElementById('bgmAudio');
@@ -565,7 +523,6 @@
                 this.currentIndex = 0;
                 this.isPlaying = false;
                 this.isExpanded = true;
-                
                 this.playMode = 0; 
                 this.modes = [
                     { icon: '🔁', name: '顺序播放' },
@@ -580,7 +537,33 @@
                 this.setupPosition();
                 this.setupDraggable();
                 this.bindEvents();
-                await this.fetchMusic();
+                await this.fetchMusicList();
+            }
+
+            /* 1. 从 GitHub 读取 JSON */
+            async fetchMusicList() {
+                try {
+                    const response = await fetch(this.jsonUrl);
+                    if (!response.ok) throw new Error("Config not found");
+                    const data = await response.json();
+                    
+                    // 构建播放列表
+                    this.playlist = data.map(item => ({
+                        title: item.title,
+                        url: this.baseUrl + encodeURIComponent(item.file)
+                    }));
+
+                    if (this.playlist.length > 0) {
+                        this.renderPlaylist();
+                        this.loadSong(0, false);
+                        this.titleEl.textContent = `就绪: ${this.playlist[0].title}`;
+                    } else {
+                        this.titleEl.textContent = "歌单为空";
+                    }
+                } catch (error) {
+                    console.error(error);
+                    this.titleEl.textContent = "离线模式 / 加载失败";
+                }
             }
 
             setupPosition() {
@@ -593,99 +576,45 @@
             }
 
             setupDraggable() {
-                let isDragging = false;
-                let startX, startY, initialLeft, initialTop;
-
+                let isDragging = false, startX, startY, initialLeft, initialTop;
                 const startDrag = (e) => {
                     if (e.target.closest('button') || e.target.closest('.playlist-panel')) return;
-                    
                     isDragging = true;
                     this.widget.style.transition = 'none';
-
                     const touch = e.touches ? e.touches[0] : e;
-                    startX = touch.clientX;
-                    startY = touch.clientY;
-                    
+                    startX = touch.clientX; startY = touch.clientY;
                     const rect = this.widget.getBoundingClientRect();
-                    initialLeft = rect.left;
-                    initialTop = rect.top;
-
+                    initialLeft = rect.left; initialTop = rect.top;
                     this.widget.style.transform = 'none';
-                    this.widget.style.bottom = 'auto';
-                    this.widget.style.right = 'auto';
-                    this.widget.style.left = initialLeft + 'px';
-                    this.widget.style.top = initialTop + 'px';
+                    this.widget.style.bottom = 'auto'; this.widget.style.right = 'auto';
+                    this.widget.style.left = initialLeft + 'px'; this.widget.style.top = initialTop + 'px';
                 };
-
                 const onDrag = (e) => {
                     if (!isDragging) return;
                     e.preventDefault();
-
                     const touch = e.touches ? e.touches[0] : e;
-                    const dx = touch.clientX - startX;
-                    const dy = touch.clientY - startY;
-
+                    const dx = touch.clientX - startX; const dy = touch.clientY - startY;
                     this.widget.style.left = `${initialLeft + dx}px`;
                     this.widget.style.top = `${initialTop + dy}px`;
                 };
-
-                const stopDrag = () => {
-                    if (isDragging) {
-                        isDragging = false;
-                        this.widget.style.transition = '';
-                    }
-                };
-
+                const stopDrag = () => { isDragging = false; this.widget.style.transition = ''; };
                 this.widget.addEventListener('mousedown', startDrag);
-                this.widget.addEventListener('touchstart', startDrag, {passive: false});
+                this.widget.addEventListener('touchstart', startDrag, {passive:false});
                 document.addEventListener('mousemove', onDrag);
-                document.addEventListener('touchmove', onDrag, {passive: false});
+                document.addEventListener('touchmove', onDrag, {passive:false});
                 document.addEventListener('mouseup', stopDrag);
                 document.addEventListener('touchend', stopDrag);
-            }
-
-            async fetchMusic() {
-                const { username, repo, folder } = this.githubConfig;
-                const path = folder ? `/${folder}` : '';
-                const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents${path}`;
-
-                try {
-                    const res = await fetch(apiUrl);
-                    if (!res.ok) throw new Error("连接失败");
-                    const data = await res.json();
-
-                    this.playlist = data.filter(file => 
-                        /\.(mp3|m4a|ogg|wav)$/i.test(file.name)
-                    ).map(file => ({
-                        title: decodeURIComponent(file.name.replace(/\.[^/.]+$/, "")),
-                        url: file.download_url
-                    }));
-
-                    if (this.playlist.length > 0) {
-                        this.renderPlaylist();
-                        this.loadSong(0, false);
-                        this.titleEl.textContent = `就绪: ${this.playlist[0].title}`;
-                    } else {
-                        this.titleEl.textContent = "无音乐文件";
-                    }
-                } catch (err) {
-                    console.error(err);
-                    this.titleEl.textContent = "加载失败 (Check GitHub)";
-                }
             }
 
             loadSong(index, autoPlay = true) {
                 if (!this.playlist[index]) return;
                 this.currentIndex = index;
                 const song = this.playlist[index];
-                
                 this.audio.src = song.url;
                 this.titleEl.textContent = song.title;
-
                 const items = this.playlistPanel.querySelectorAll('.playlist-item');
                 items.forEach(el => el.classList.remove('current'));
                 if (items[index]) items[index].classList.add('current');
-
                 if (autoPlay) {
                     this.audio.play().catch(() => {});
                     this.isPlaying = true;
@@ -694,38 +623,23 @@
             }
 
             togglePlay() {
-                if (this.audio.paused) {
-                    this.audio.play();
-                    this.isPlaying = true;
-                } else {
-                    this.audio.pause();
-                    this.isPlaying = false;
-                }
+                if (this.audio.paused) { this.audio.play(); this.isPlaying = true; }
+                else { this.audio.pause(); this.isPlaying = false; }
                 this.updatePlayUI();
             }
 
             updatePlayUI() {
                 this.playPauseBtn.textContent = this.isPlaying ? '⏸' : '▶';
-                if (this.isPlaying) {
-                    this.disc.classList.add('rotate');
-                    this.disc.classList.remove('paused');
-                } else {
-                    this.disc.classList.add('paused');
-                }
+                if (this.isPlaying) { this.disc.classList.add('rotate'); this.disc.classList.remove('paused'); }
+                else { this.disc.classList.add('paused'); }
             }
 
             nextSong(isAuto = false) {
-                if (isAuto && this.playMode === 1) {
-                    this.audio.currentTime = 0;
-                    this.audio.play();
-                    return;
-                }
-
+                if (isAuto && this.playMode === 1) { this.audio.currentTime = 0; this.audio.play(); return; }
                 if (this.playMode === 2) {
                     let nextIndex;
-                    do {
-                        nextIndex = Math.floor(Math.random() * this.playlist.length);
-                    } while (this.playlist.length > 1 && nextIndex === this.currentIndex);
+                    do { nextIndex = Math.floor(Math.random() * this.playlist.length); }
+                    while (this.playlist.length > 1 && nextIndex === this.currentIndex);
                     this.loadSong(nextIndex);
                 } else {
                     let nextIndex = (this.currentIndex + 1) % this.playlist.length;
@@ -745,13 +659,11 @@
                 this.titleEl.textContent = `模式: ${mode.name}`;
                 setTimeout(() => {
                     if(this.titleEl.textContent.includes('模式:')) 
-                        this.titleEl.textContent = this.playlist[this.currentIndex]?.title || "P&S Radio";
+                        this.titleEl.textContent = this.playlist[this.currentIndex]?.title || "Ready";
                 }, 1500);
             }
 
-            toggleList() {
-                this.playlistPanel.classList.toggle('show');
-            }
+            toggleList() { this.playlistPanel.classList.toggle('show'); }
 
             toggleMinimize() {
                 this.isExpanded = !this.isExpanded;
@@ -785,13 +697,9 @@
                 this.modeBtn.onclick = () => this.toggleMode();
                 this.listBtn.onclick = () => this.toggleList();
                 this.minimizeBtn.onclick = (e) => { e.stopPropagation(); this.toggleMinimize(); };
-                
                 this.widget.onclick = (e) => {
-                    if (!this.isExpanded && !e.target.closest('.minimize-btn')) {
-                        this.toggleMinimize();
-                    }
+                    if (!this.isExpanded && !e.target.closest('.minimize-btn')) this.toggleMinimize();
                 };
-
                 this.audio.onended = () => this.nextSong(true);
             }
         }
@@ -801,20 +709,5 @@
             new MusicManager();
         });
     </script>
-    <!-- 插入到 </body> 这一行之前 -->
-<script>
-    // 自动向外部发送高度信息
-    function sendHeight() {
-        // 获取网页真实高度
-        const height = document.body.scrollHeight; 
-        // 发送给 SillyTavern
-        window.parent.postMessage({ frameHeight: height }, '*');
-    }
-    // 监听加载、调整窗口、点击操作（比如展开歌单）
-    window.addEventListener('load', sendHeight);
-    window.addEventListener('resize', sendHeight);
-    document.addEventListener('click', () => setTimeout(sendHeight, 300)); // 点击后延时检测高度变化
-    setInterval(sendHeight, 1000); // 每秒检查一次，确保万无一失
-</script>
 </body>
 </html>
