@@ -142,7 +142,7 @@
         }
         @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-        /* ==================== 🎵 悬浮播放器 V3 ==================== */
+        /* ==================== 🎵 悬浮播放器 V3.5 (支持封面) ==================== */
         .music-widget {
             position: fixed; z-index: 9000;
             background: rgba(255, 255, 255, 0.75);
@@ -161,15 +161,21 @@
         .music-widget.collapsed:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--color-pink); }
 
         .player-header { display: flex; align-items: center; padding: 15px; width: 100%; position: relative; }
+        
+        /* 唱片样式 (支持封面图) */
         .music-disc {
             width: 60px; height: 60px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-panty), var(--color-pink));
+            background: linear-gradient(135deg, var(--color-panty), var(--color-pink)); /* 默认背景 */
+            background-size: cover; background-position: center; /* 图片适配 */
             border: 3px solid rgba(255,255,255,0.8);
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             flex-shrink: 0; transition: 0.5s; pointer-events: none;
         }
-        .music-widget.collapsed .music-disc { background: transparent; border: none; box-shadow: none; }
+        /* 当有图片时，去掉文字 */
+        .music-disc.has-cover { color: transparent; }
+
+        .music-widget.collapsed .music-disc { background: transparent !important; border: none; box-shadow: none; }
         .music-widget.collapsed::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(255,255,255,0.4); z-index: -1; }
         
         .rotate { animation: spin 6s linear infinite; }
@@ -180,12 +186,23 @@
         .music-widget.collapsed .player-content { display: none; }
         .song-title { font-size: 0.9rem; font-weight: 700; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; }
 
+        /* 控制按钮样式 */
         .controls-row { display: flex; align-items: center; gap: 10px; }
         .ctrl-btn {
             background: none; border: none; cursor: pointer; color: #666; font-size: 1.1rem;
             width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
         .ctrl-btn:hover { background: rgba(255,255,255,0.5); color: var(--color-pink); }
+        
+        /* 🌈 播放模式按钮颜色 */
+        .ctrl-btn.mode-loop { 
+            color: var(--color-pink); 
+            text-shadow: 0 0 8px rgba(255, 135, 171, 0.5); font-weight: bold;
+        }
+        .ctrl-btn.mode-random { 
+            color: var(--color-stocking); 
+            text-shadow: 0 0 8px rgba(195, 157, 255, 0.5); font-weight: bold;
+        }
 
         .playlist-panel { width: 100%; max-height: 0; overflow-y: auto; background: rgba(255,255,255,0.5); transition: 0.3s; border-top: 1px solid rgba(255,255,255,0.3); }
         .playlist-panel.show { max-height: 200px; }
@@ -292,7 +309,7 @@
                 <h3>项目发展历程</h3>
                 <ul>
                     <li><strong>v1.0 (首版发布)：</strong> 完成基础世界观与角色设定</li>
-                    <li><strong>计划中：</strong> 加入前端补充更多动漫剧情要素与配角线</li>
+                    <li><strong>计划中：</strong> 补充更多动漫剧情要素与配角线</li>
                 </ul>
             </div>
         </details>
@@ -498,13 +515,11 @@
             }
         }
 
-        /* ==================== 🎵 音乐播放器管理器 (热更新版) ==================== */
+        /* ==================== 🎵 音乐播放器管理器 (支持封面版) ==================== */
         class MusicManager {
             constructor() {
-                // GitHub Pages 基础地址
                 this.baseUrl = "https://stockielchan.github.io/stocking-music/";
-                // JSON 文件名
-                this.jsonUrl = this.baseUrl + "music.json?t=" + new Date().getTime(); // 加时间戳防缓存
+                this.jsonUrl = this.baseUrl + "music.json?t=" + new Date().getTime(); 
 
                 this.widget = document.getElementById('musicWidget');
                 this.audio = document.getElementById('bgmAudio');
@@ -523,11 +538,12 @@
                 this.currentIndex = 0;
                 this.isPlaying = false;
                 this.isExpanded = true;
+                
                 this.playMode = 0; 
                 this.modes = [
-                    { icon: '🔁', name: '顺序播放' },
-                    { icon: '🔂', name: '单曲循环' },
-                    { icon: '🔀', name: '随机播放' }
+                    { icon: '🔁', name: '顺序播放', class: '' },
+                    { icon: '🔂', name: '单曲循环', class: 'mode-loop' },
+                    { icon: '🔀', name: '随机播放', class: 'mode-random' }
                 ];
 
                 this.init();
@@ -540,17 +556,17 @@
                 await this.fetchMusicList();
             }
 
-            /* 1. 从 GitHub 读取 JSON */
             async fetchMusicList() {
                 try {
                     const response = await fetch(this.jsonUrl);
                     if (!response.ok) throw new Error("Config not found");
                     const data = await response.json();
                     
-                    // 构建播放列表
                     this.playlist = data.map(item => ({
                         title: item.title,
-                        url: this.baseUrl + encodeURIComponent(item.file)
+                        url: this.baseUrl + encodeURIComponent(item.file),
+                        // 新增：读取封面字段，如果没有就为 null
+                        cover: item.cover ? this.baseUrl + encodeURIComponent(item.cover) : null
                     }));
 
                     if (this.playlist.length > 0) {
@@ -610,11 +626,25 @@
                 if (!this.playlist[index]) return;
                 this.currentIndex = index;
                 const song = this.playlist[index];
+                
                 this.audio.src = song.url;
                 this.titleEl.textContent = song.title;
+                
+                // 💿 封面更新逻辑
+                if (song.cover) {
+                    this.disc.style.backgroundImage = `url('${song.cover}')`;
+                    this.disc.classList.add('has-cover'); // 隐藏文字
+                    this.disc.textContent = ''; 
+                } else {
+                    this.disc.style.backgroundImage = ''; // 恢复默认渐变
+                    this.disc.classList.remove('has-cover');
+                    this.disc.textContent = '♪';
+                }
+
                 const items = this.playlistPanel.querySelectorAll('.playlist-item');
                 items.forEach(el => el.classList.remove('current'));
                 if (items[index]) items[index].classList.add('current');
+                
                 if (autoPlay) {
                     this.audio.play().catch(() => {});
                     this.isPlaying = true;
@@ -656,6 +686,11 @@
                 this.playMode = (this.playMode + 1) % 3;
                 const mode = this.modes[this.playMode];
                 this.modeBtn.textContent = mode.icon;
+                
+                // 切换样式
+                this.modeBtn.classList.remove('mode-loop', 'mode-random');
+                if (mode.class) this.modeBtn.classList.add(mode.class);
+
                 this.titleEl.textContent = `模式: ${mode.name}`;
                 setTimeout(() => {
                     if(this.titleEl.textContent.includes('模式:')) 
