@@ -25,13 +25,28 @@
     "cover": "ALL-PSG.jpg"
   },
   {
-    "title": "SANDA",
+    "title": "Scanty & KneeSocks",
+    "file": "Scanty&KneeSocks.mp3",
+    "cover": "ALL-PSG.jpg"
+  },
+  {
+    "title": "SANDA(外添加)",
     "file": "SANDA.mp3",
     "cover": "SANDA.jpg"
   },
   {
-    "title": "Scanty & KneeSocks",
-    "file": "Scanty&KneeSocks.mp3",
-    "cover": "ALL-PSG.jpg"
+    "title": "One Last Kiss(外添加)",
+    "file": "OneLastKiss.mp3",
+    "cover": "OneLastKiss.jpg"
+  },
+  {
+    "title": "だから僕は音楽を辞めた(外添加)",
+    "file": "syw.mp3",
+    "cover": "syw.jpg"
+  },
+  {
+    "title": "アポリア(外添加)",
+    "file": "kun.mp3",
+    "cover": "kum.jpg"
   }
 ]
