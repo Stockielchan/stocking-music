@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panty & Stocking 同人角色卡介绍页面">
+    <meta name="theme-color" content="#ffea7f">
+    <title>Panty & Stocking - 角色卡介绍</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==================== 基础全局样式 ==================== */
+        :root {
+            --color-panty: #ffea7f;
+            --color-stocking: #c39dff;
+            --color-pink: #ff87ab;
+            --color-cyan: #00e5ff;
+            --color-green: #7dffc1;
+            --color-text: #333;
+            --color-text-light: #555;
+            --color-heading: #222;
+            --color-border: rgba(255, 255, 255, 0.4);
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --bg-group: rgba(255, 255, 255, 0.7);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 10px;
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Poppins', 'Noto Sans SC', sans-serif;
+            color: var(--color-text);
+            line-height: 1.8;
+            padding: 2rem 1.25rem;
+            min-height: 100vh;
+            background: linear-gradient(160deg, #ffea7f 0%, #ff87ab 45%, #c39dff 100%);
+            background-attachment: fixed;
+            padding-bottom: 150px;
+        }
+
+        /* 主容器 */
+        .main-container {
+            width: 100%; max-width: 900px; margin: 0 auto;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: clamp(2rem, 8vw, 3.5rem);
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 标题与文本 */
+        .header { text-align: center; margin-bottom: 2rem; }
+        .title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 12vw, 9rem);
+            line-height: 1; font-weight: 900; margin-bottom: 0.3em;
+        }
+        .title-panty { background: linear-gradient(120deg, #ffea7f, #ff87ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .title-stocking { background: linear-gradient(120deg, #c39dff, #ff87ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { font-size: 0.95rem; color: var(--color-text-light); font-weight: 500; opacity: 0.9; }
+        .golden-divider {
+            height: 0.5px; margin: 0.6em auto 1.2em; width: 95%; max-width: 550px;
+            background: linear-gradient(to right, transparent 0%, #ffd700 50%, transparent 100%);
+        }
+
+        h1, h2, h3 { color: var(--color-heading); font-weight: 700; margin-bottom: 0.5em; }
+        .content-section {
+            background: var(--bg-group); border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-md); padding: 1.75rem; margin-bottom: 2rem; transition: 0.3s;
+        }
+        .content-section:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); transform: translateY(-2px); }
+
+        /* ==================== 按钮系统 (保证大小一致) ==================== */
+        .button-group { 
+            display: flex; 
+            gap: 1rem; 
+            margin-top: 1.5rem; 
+            flex-wrap: wrap; 
+            justify-content: center; /* 居中对齐 */
+        }
+        
+        .btn {
+            flex: 1; /* 让所有按钮平分宽度 */
+            min-width: 160px; /* 最小宽度限制 */
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 0.6em; 
+            padding: 1em 1.5em; /* 统一内边距 */
+            font-weight: 700; 
+            color: white;
+            border: none; 
+            border-radius: var(--radius-sm); 
+            cursor: pointer; 
+            transition: 0.2s;
+            text-decoration: none; 
+            position: relative; 
+            overflow: hidden;
+            font-size: 1rem; /* 统一字体大小 */
+            box-sizing: border-box; /* 确保边框不影响大小 */
+            height: 56px; /* 强制统一高度 */
+        }
+        
+        .btn-primary { background: linear-gradient(120deg, var(--color-pink), var(--color-cyan)); }
+        .btn-secondary { background: linear-gradient(120deg, var(--color-panty), var(--color-pink)); }
+        
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn:active { transform: translateY(-1px); }
+        .btn-icon { width: 1.4em; height: 1.4em; }
+
+        /* 折叠面板 */
+        .accordion { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1rem; overflow: hidden; }
+        .accordion-trigger {
+            width: 100%; padding: 1.3em; font-size: 1.2rem; font-weight: 700; color: white;
+            background: linear-gradient(90deg, rgba(255, 135, 171, 0.85), rgba(0, 229, 255, 0.85));
+            border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+        }
+        .accordion-content { padding: 2em; background: rgba(255, 255, 255, 0.5); animation: expandDown 0.3s ease-out; }
+        @keyframes expandDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 1000px; } }
+
+        /* 鸣谢卡片 */
+        .credits-card {
+            padding: 3px; margin: 4rem auto 0; border-radius: var(--radius-lg);
+            background: linear-gradient(120deg, var(--color-panty), var(--color-pink), var(--color-stocking));
+        }
+        .credits-content { background: var(--bg-card); padding: 2.5em; border-radius: calc(var(--radius-lg) - 3px); text-align: center; }
+        .credit-item {
+            font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5em; cursor: pointer; display: inline-block; width: 100%;
+            background: linear-gradient(120deg, #9370db, var(--color-stocking)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            transition: transform 0.2s; user-select: none;
+        }
+        .credit-item:hover { transform: scale(1.1); }
+
+        /* 动画元素 */
+        .floating-heart {
+            position: fixed; font-size: 1.5rem; pointer-events: none; z-index: 9999;
+            animation: heartRise 1s ease-out forwards;
+        }
+        @keyframes heartRise { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(-80px) scale(1.5); } }
+        
+        .floating-bubble {
+            position: fixed; background: linear-gradient(135deg, #FFE5F0 0%, #FFF0F7 100%);
+            border: 2px solid #ffb6d9; border-radius: 30px;
+            padding: 0.8em 1.5em; font-size: 0.9rem; font-weight: 700; color: #d63384;
+            box-shadow: 0 8px 30px rgba(255, 135, 171, 0.3); pointer-events: none; z-index: 9998;
+            animation: bubbleFloat 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; white-space: pre-line; text-align: center;
+        }
+        @keyframes bubbleFloat { 0% { opacity: 0; transform: scale(0.3) translateY(0); } 10% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
+        
+        .toast {
+            position: fixed; bottom: 20px; right: 20px; padding: 10px 20px;
+            background: rgba(125, 255, 193, 0.95); color: #333; font-weight: bold; border-radius: 10px;
+            z-index: 10000; animation: fadeUp 0.3s ease-out; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+        /* ==================== 🎵 悬浮播放器 V3 ==================== */
+        .music-widget {
+            position: fixed; z-index: 9000;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: width 0.4s, height 0.4s, border-radius 0.4s;
+            overflow: hidden;
+            bottom: 30px; left: 30px;
+            touch-action: none; cursor: move;
+        }
+        @media (max-width: 768px) { .music-widget { bottom: auto; top: 20px; } }
+
+        .music-widget.expanded { width: 340px; min-height: 110px; border-radius: 20px; display: flex; flex-direction: column; }
+        .music-widget.collapsed { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .music-widget.collapsed:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--color-pink); }
+
+        .player-header { display: flex; align-items: center; padding: 15px; width: 100%; position: relative; }
+        .music-disc {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-panty), var(--color-pink));
+            border: 3px solid rgba(255,255,255,0.8);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0; transition: 0.5s; pointer-events: none;
+        }
+        .music-widget.collapsed .music-disc { background: transparent; border: none; box-shadow: none; }
+        .music-widget.collapsed::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(255,255,255,0.4); z-index: -1; }
+        
+        .rotate { animation: spin 6s linear infinite; }
+        .paused { animation-play-state: paused; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .player-content { flex: 1; margin-left: 15px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+        .music-widget.collapsed .player-content { display: none; }
+        .song-title { font-size: 0.9rem; font-weight: 700; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; }
+
+        .controls-row { display: flex; align-items: center; gap: 10px; }
+        .ctrl-btn {
+            background: none; border: none; cursor: pointer; color: #666; font-size: 1.1rem;
+            width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .ctrl-btn:hover { background: rgba(255,255,255,0.5); color: var(--color-pink); }
+
+        .playlist-panel { width: 100%; max-height: 0; overflow-y: auto; background: rgba(255,255,255,0.5); transition: 0.3s; border-top: 1px solid rgba(255,255,255,0.3); }
+        .playlist-panel.show { max-height: 200px; }
+        .playlist-item { padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 0.85rem; color: #555; cursor: pointer; }
+        .playlist-item.current { color: #d63384; font-weight: 600; background: rgba(255,135,171,0.1); }
+
+        .minimize-btn { position: absolute; top: 5px; right: 8px; font-size: 1.2rem; color: #888; background: none; border: none; z-index: 10; }
+        .music-widget.collapsed .minimize-btn { display: none; }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <!-- 头部区域 -->
+        <header class="header">
+            <h1 class="title">
+                <span class="title-panty">Panty</span>
+                <span class="title-stocking">Stocking</span>
+            </h1>
+            <div class="golden-divider"></div>
+            <p class="subtitle">🎬 同人角色卡</p>
+            <p class="subtitle">《Panty and Stocking with Garterbelt》</p>
+        </header>
+
+        <!-- 简介区 -->
+        <section class="content-section">
+            <h2>👋 欢迎来到堕天城</h2>
+            <h4>这是一个充满创意的同人角色卡项目</h4>
+            <p>本卡严格遵循动漫世界观设定，融合多个角色的深度人设，无需观看原作也能享受精彩体验。包含 <strong>9位主角</strong> 与 <strong>6位配角</strong>，以及 <strong>4个自定义用户人设</strong>。</p>
+        </section>
+
+        <!-- 特色介绍 -->
+        <section class="content-section">
+            <h3>✨ 项目特色</h3>
+            <ul>
+                <li>严谨的世界观设定与人物人设，参考动漫与官方 Wiki</li>
+                <li>9位主角与6位配角，丰富的角色互动体验</li>
+                <li>4个自定义用户人设，适应不同玩家偏好</li>
+                <li>即使未看原作也能上手游玩，无门槛体验</li>
+                <li>持续更新中，世界观将不断完善</li>
+            </ul>
+        </section>
+
+        <!-- 链接与分享 -->
+        <section class="content-section">
+            <h3>🔗 获取角色卡</h3>
+            <p>点击下方链接访问发布帖子，或直接复制链接分享给朋友。</p>
+            
+            <!-- 按钮组 (已修正为两个大小一致的按钮) -->
+            <div class="button-group">
+                <!-- 蓝紫色按钮：复制固定链接 -->
+                <button class="btn btn-primary" id="mainCopyBtn">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    <span>复制链接</span>
+                </button>
+                <!-- 黄粉色按钮：前往帖子 (链接已更新) -->
+                <a href="https://discord.com/channels/1134557553011998840/1434325852165902366" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                    <span>前往帖子</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- 功能介绍区域 -->
+        <div style="text-align: center; margin: 3rem 0;">
+            <h2 style="color: var(--color-pink); border: 2px solid var(--color-pink); border-radius: 12px; display: inline-block; padding: 0.5em 1em;">📚 功能介绍</h2>
+        </div>
+
+        <!-- 开场剧情 -->
+        <details class="accordion">
+            <summary class="accordion-trigger"><span>🎬 开场剧情</span></summary>
+            <div class="accordion-content">
+                <h3>共包含 8 个主线剧情 + 1 个开放式开场</h3>
+                <ul>
+                    <li><strong>剧情一：</strong> 一如往常，天使姐妹两人又被喊去处理任务。</li>
+                    <li><strong>剧情二：</strong> 天使姐妹又在堕天城高中闹疯了，恶魔姐妹出面与天使姐妹对峙。</li>
+                    <li><strong>剧情三：</strong> 天使兄弟来之不易的度假时间，来到了人间堕天海滩度假。</li>
+                    <li><strong>剧情四：</strong> 枪械匠婊在学校门口跟布利夫道别分开后，来到了一处小巷做起了什么秘密交易。</li>
+                    <li><strong>剧情五：</strong> 今天的神父感觉心情特别好，原来是今天他请求到了神谕，说他今天的运气会特别好。</li>
+                    <li><strong>剧情六：</strong> 丝桃金在手机看到了限定款慕斯蛋糕，前往了那家名为下午茶的甜品店。</li>
+                    <li><strong>剧情七：</strong> 布利夫跟枪械匠婊一起放学前往了商场，讨论着今天新出的那款游戏机。</li>
+                    <li><strong>剧情八：</strong> 堕天城发生了前所未有的危机，整整两只 S 级恶灵现身，全员出动！</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- 主角人设 -->
+        <details class="accordion">
+            <summary class="accordion-trigger"><span>👥 主角人设</span></summary>
+            <div class="accordion-content">
+                <h3>提供 4 个自定义用户人设</h3>
+                <p>每个人设都经过精心设计，<em>人设卡默认关闭，请在世界书最后一页自行启用</em>。</p>
+                <ul>
+                    <li><strong>Meru：</strong> 跟 Stocking 性格相似的可爱男孩子，拥有强大的武器与能力。</li>
+                    <li><strong>Dracula：</strong> 德古拉吸血鬼人设，具有强大的超自然力量。</li>
+                    <li><strong>Leo：</strong> 专属人设，肌肉猛男，占有欲强，人设特性直率。</li>
+                    <li><strong>夜羊：</strong> 香香软软的男娘人设，温柔体贴。</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- 更新日志 -->
+        <details class="accordion">
+            <summary class="accordion-trigger"><span>📋 更新日志</span></summary>
+            <div class="accordion-content">
+                <h3>项目发展历程</h3>
+                <ul>
+                    <li><strong>v1.0 (首版发布)：</strong> 完成基础世界观与角色设定</li>
+                    <li><strong>计划中：</strong> 补充更多动漫剧情要素与配角线</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- 鸣谢卡片 -->
+        <div class="credits-card">
+            <div class="credits-content">
+                <h2>🙏 鸣谢名单</h2>
+                <div class="credit-item">Single</div>
+                <div class="credit-item">Leo335346</div>
+                <div class="credit-item">猫猫</div>
+                <div class="credit-item">夜羊</div>
+                <div class="credit-item">所有游玩本卡的朋友们</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 🎵 悬浮播放器 V3 -->
+    <div class="music-widget expanded" id="musicWidget">
+        <button class="minimize-btn" id="minimizeBtn" title="最小化">−</button>
+        <div class="player-header">
+            <div class="music-disc" id="disc">♪</div>
+            <div class="player-content">
+                <div class="song-title" id="songTitle">Connecting GitHub...</div>
+                <div class="controls-row">
+                    <button class="ctrl-btn" id="modeBtn" title="切换模式">🔁</button>
+                    <button class="ctrl-btn" id="prevBtn">⏮</button>
+                    <button class="ctrl-btn" id="playPauseBtn" style="font-size: 1.4rem;">▶</button>
+                    <button class="ctrl-btn" id="nextBtn">⏭</button>
+                    <button class="ctrl-btn" id="listBtn" title="歌单">📜</button>
+                </div>
+            </div>
+        </div>
+        <div class="playlist-panel" id="playlistPanel"></div>
+        <audio id="bgmAudio" preload="none"></audio>
+    </div>
+
+    <script>
+        /* ==================== UI 交互管理器 ==================== */
+        class UIManager {
+            constructor() {
+                // ⚠️ 硬编码要复制的链接 ⚠️
+                this.targetUrl = "https://discord.com/channels/1134557553011998840/1434325852165902366";
+                
+                this.creditClickCounts = {};
+                this.burstCooldown = 0;
+                this.init();
+            }
+
+            init() {
+                this.bindMainCopyButton();
+                this.initHearts();
+                this.setupCreditEggs();
+                this.setupAccessibility();
+            }
+
+            /* 1. 复制按钮逻辑 (增强兼容性版) */
+            bindMainCopyButton() {
+                const mainBtn = document.getElementById('mainCopyBtn');
+                if (mainBtn) {
+                    mainBtn.addEventListener('click', (e) => {
+                        e.preventDefault(); // 防止可能的默认行为
+                        this.copyTextToClipboard(this.targetUrl, mainBtn);
+                    });
+                }
+            }
+
+            /* 强力复制函数 */
+            copyTextToClipboard(text, btnElement) {
+                // 优先尝试现代 API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text)
+                        .then(() => this.handleCopySuccess(btnElement))
+                        .catch(() => this.fallbackCopy(text, btnElement));
+                } else {
+                    // 降级方案 (用于本地文件或旧浏览器)
+                    this.fallbackCopy(text, btnElement);
+                }
+            }
+
+            /* 备用复制方案 */
+            fallbackCopy(text, btnElement) {
+                try {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    // 设为不可见，但必须在可视区域内才能被选中
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-9999px";
+                    textArea.style.top = "0";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        this.handleCopySuccess(btnElement);
+                    } else {
+                        this.showToast('❌ 浏览器限制，请长按链接复制');
+                    }
+                } catch (err) {
+                    this.showToast('❌ 复制失败');
+                }
+            }
+
+            /* 复制成功反馈 */
+            handleCopySuccess(btn) {
+                this.showToast('✅ 链接已复制');
+                if (btn) {
+                    const originalHtml = btn.innerHTML;
+                    const span = btn.querySelector('span');
+                    
+                    if (span) span.textContent = '已复制！';
+                    btn.style.background = 'linear-gradient(120deg, var(--color-green), #5cffac)'; // 变绿
+                    
+                    setTimeout(() => {
+                        btn.style.background = ''; // 恢复原色
+                        if (span) span.textContent = '复制链接';
+                        else btn.innerHTML = originalHtml;
+                    }, 2000);
+                }
+            }
+
+            /* 2. 心形特效 */
+            initHearts() {
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('.music-widget') || e.target.closest('button') || e.target.closest('.credit-item')) return;
+                    this.createHeart(e.clientX, e.clientY);
+                });
+            }
+            
+            createHeart(x, y) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.textContent = ['💖', '💗', '💓', '💕'][Math.floor(Math.random() * 4)];
+                heart.style.left = (x - 10) + 'px';
+                heart.style.top = (y - 10) + 'px';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 1000);
+            }
+
+            /* 3. 鸣谢彩蛋 */
+            setupCreditEggs() {
+                const items = document.querySelectorAll('.credit-item');
+                items.forEach(item => {
+                    const name = item.textContent.trim();
+                    this.creditClickCounts[name] = 0;
+
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.creditClickCounts[name]++;
+
+                        if (this.creditClickCounts[name] >= 6) {
+                            if (this.burstCooldown === 0) {
+                                this.createBurst(e);
+                                this.creditClickCounts[name] = 0;
+                                this.burstCooldown = 15;
+                                const timer = setInterval(() => {
+                                    this.burstCooldown--;
+                                    if (this.burstCooldown <= 0) clearInterval(timer);
+                                }, 1000);
+                            }
+                        } else if (this.creditClickCounts[name] > 3) {
+                            this.showBubble(e);
+                        } else {
+                            this.createHeart(e.clientX, e.clientY);
+                        }
+                    });
+                });
+            }
+
+            showBubble(e) {
+                const bubble = document.createElement('div');
+                bubble.className = 'floating-bubble';
+                bubble.textContent = '˶ᵒᜊ˂˶\n别戳了啦';
+                const rect = e.target.getBoundingClientRect();
+                bubble.style.left = (rect.left + rect.width / 2) + 'px';
+                bubble.style.top = rect.top + 'px';
+                document.body.appendChild(bubble);
+                setTimeout(() => bubble.remove(), 2000);
+            }
+
+            createBurst(e) {
+                for(let i=0; i<8; i++) {
+                    setTimeout(() => {
+                         const bubble = document.createElement('div');
+                         bubble.className = 'floating-bubble';
+                         bubble.textContent = '💢';
+                         const rect = e.target.getBoundingClientRect();
+                         const offsetX = (Math.random() - 0.5) * 100;
+                         bubble.style.left = (rect.left + rect.width/2 + offsetX) + 'px';
+                         bubble.style.top = rect.top + 'px';
+                         document.body.appendChild(bubble);
+                         setTimeout(() => bubble.remove(), 2000);
+                    }, i * 100);
+                }
+            }
+
+            showToast(msg) {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = msg;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 2000);
+            }
+
+            setupAccessibility() {
+                document.querySelectorAll('.accordion').forEach(acc => {
+                    acc.addEventListener('keydown', (e) => {
+                        if(e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault(); acc.open = !acc.open;
+                        }
+                    });
+                });
+            }
+        }
+
+        /* ==================== 🎵 音乐播放器管理器 ==================== */
+        class MusicManager {
+            constructor() {
+                // GitHub 配置
+                this.githubConfig = {
+                    username: 'Stockielchan',  
+                    repo: 'stocking-music',
+                    folder: '',
+                    branch: 'main'
+                };
+
+                this.widget = document.getElementById('musicWidget');
+                this.audio = document.getElementById('bgmAudio');
+                this.disc = document.getElementById('disc');
+                this.titleEl = document.getElementById('songTitle');
+                this.playlistPanel = document.getElementById('playlistPanel');
+                
+                this.playPauseBtn = document.getElementById('playPauseBtn');
+                this.prevBtn = document.getElementById('prevBtn');
+                this.nextBtn = document.getElementById('nextBtn');
+                this.modeBtn = document.getElementById('modeBtn');
+                this.listBtn = document.getElementById('listBtn');
+                this.minimizeBtn = document.getElementById('minimizeBtn');
+
+                this.playlist = [];
+                this.currentIndex = 0;
+                this.isPlaying = false;
+                this.isExpanded = true;
+                
+                this.playMode = 0; 
+                this.modes = [
+                    { icon: '🔁', name: '顺序播放' },
+                    { icon: '🔂', name: '单曲循环' },
+                    { icon: '🔀', name: '随机播放' }
+                ];
+
+                this.init();
+            }
+
+            async init() {
+                this.setupPosition();
+                this.setupDraggable();
+                this.bindEvents();
+                await this.fetchMusic();
+            }
+
+            setupPosition() {
+                if (window.innerWidth <= 768) {
+                    this.widget.style.top = '20px';
+                    this.widget.style.bottom = 'auto';
+                    this.widget.style.left = '50%';
+                    this.widget.style.transform = 'translateX(-50%)';
+                }
+            }
+
+            setupDraggable() {
+                let isDragging = false;
+                let startX, startY, initialLeft, initialTop;
+
+                const startDrag = (e) => {
+                    if (e.target.closest('button') || e.target.closest('.playlist-panel')) return;
+                    
+                    isDragging = true;
+                    this.widget.style.transition = 'none';
+
+                    const touch = e.touches ? e.touches[0] : e;
+                    startX = touch.clientX;
+                    startY = touch.clientY;
+                    
+                    const rect = this.widget.getBoundingClientRect();
+                    initialLeft = rect.left;
+                    initialTop = rect.top;
+
+                    this.widget.style.transform = 'none';
+                    this.widget.style.bottom = 'auto';
+                    this.widget.style.right = 'auto';
+                    this.widget.style.left = initialLeft + 'px';
+                    this.widget.style.top = initialTop + 'px';
+                };
+
+                const onDrag = (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+
+                    const touch = e.touches ? e.touches[0] : e;
+                    const dx = touch.clientX - startX;
+                    const dy = touch.clientY - startY;
+
+                    this.widget.style.left = `${initialLeft + dx}px`;
+                    this.widget.style.top = `${initialTop + dy}px`;
+                };
+
+                const stopDrag = () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        this.widget.style.transition = '';
+                    }
+                };
+
+                this.widget.addEventListener('mousedown', startDrag);
+                this.widget.addEventListener('touchstart', startDrag, {passive: false});
+                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('touchmove', onDrag, {passive: false});
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchend', stopDrag);
+            }
+
+            async fetchMusic() {
+                const { username, repo, folder } = this.githubConfig;
+                const path = folder ? `/${folder}` : '';
+                const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents${path}`;
+
+                try {
+                    const res = await fetch(apiUrl);
+                    if (!res.ok) throw new Error("连接失败");
+                    const data = await res.json();
+
+                    this.playlist = data.filter(file => 
+                        /\.(mp3|m4a|ogg|wav)$/i.test(file.name)
+                    ).map(file => ({
+                        title: decodeURIComponent(file.name.replace(/\.[^/.]+$/, "")),
+                        url: file.download_url
+                    }));
+
+                    if (this.playlist.length > 0) {
+                        this.renderPlaylist();
+                        this.loadSong(0, false);
+                        this.titleEl.textContent = `就绪: ${this.playlist[0].title}`;
+                    } else {
+                        this.titleEl.textContent = "无音乐文件";
+                    }
+                } catch (err) {
+                    console.error(err);
+                    this.titleEl.textContent = "加载失败 (Check GitHub)";
+                }
+            }
+
+            loadSong(index, autoPlay = true) {
+                if (!this.playlist[index]) return;
+                this.currentIndex = index;
+                const song = this.playlist[index];
+                
+                this.audio.src = song.url;
+                this.titleEl.textContent = song.title;
+
+                const items = this.playlistPanel.querySelectorAll('.playlist-item');
+                items.forEach(el => el.classList.remove('current'));
+                if (items[index]) items[index].classList.add('current');
+
+                if (autoPlay) {
+                    this.audio.play().catch(() => {});
+                    this.isPlaying = true;
+                    this.updatePlayUI();
+                }
+            }
+
+            togglePlay() {
+                if (this.audio.paused) {
+                    this.audio.play();
+                    this.isPlaying = true;
+                } else {
+                    this.audio.pause();
+                    this.isPlaying = false;
+                }
+                this.updatePlayUI();
+            }
+
+            updatePlayUI() {
+                this.playPauseBtn.textContent = this.isPlaying ? '⏸' : '▶';
+                if (this.isPlaying) {
+                    this.disc.classList.add('rotate');
+                    this.disc.classList.remove('paused');
+                } else {
+                    this.disc.classList.add('paused');
+                }
+            }
+
+            nextSong(isAuto = false) {
+                if (isAuto && this.playMode === 1) {
+                    this.audio.currentTime = 0;
+                    this.audio.play();
+                    return;
+                }
+
+                if (this.playMode === 2) {
+                    let nextIndex;
+                    do {
+                        nextIndex = Math.floor(Math.random() * this.playlist.length);
+                    } while (this.playlist.length > 1 && nextIndex === this.currentIndex);
+                    this.loadSong(nextIndex);
+                } else {
+                    let nextIndex = (this.currentIndex + 1) % this.playlist.length;
+                    this.loadSong(nextIndex);
+                }
+            }
+
+            prevSong() {
+                let prevIndex = (this.currentIndex - 1 + this.playlist.length) % this.playlist.length;
+                this.loadSong(prevIndex);
+            }
+
+            toggleMode() {
+                this.playMode = (this.playMode + 1) % 3;
+                const mode = this.modes[this.playMode];
+                this.modeBtn.textContent = mode.icon;
+                this.titleEl.textContent = `模式: ${mode.name}`;
+                setTimeout(() => {
+                    if(this.titleEl.textContent.includes('模式:')) 
+                        this.titleEl.textContent = this.playlist[this.currentIndex]?.title || "P&S Radio";
+                }, 1500);
+            }
+
+            toggleList() {
+                this.playlistPanel.classList.toggle('show');
+            }
+
+            toggleMinimize() {
+                this.isExpanded = !this.isExpanded;
+                if (this.isExpanded) {
+                    this.widget.classList.remove('collapsed');
+                    this.widget.classList.add('expanded');
+                    this.minimizeBtn.style.display = 'block';
+                } else {
+                    this.widget.classList.remove('expanded');
+                    this.widget.classList.add('collapsed');
+                    this.minimizeBtn.style.display = 'none';
+                    this.playlistPanel.classList.remove('show');
+                }
+            }
+
+            renderPlaylist() {
+                this.playlistPanel.innerHTML = '';
+                this.playlist.forEach((song, i) => {
+                    const item = document.createElement('div');
+                    item.className = 'playlist-item';
+                    item.textContent = `${i + 1}. ${song.title}`;
+                    item.onclick = () => this.loadSong(i, true);
+                    this.playlistPanel.appendChild(item);
+                });
+            }
+
+            bindEvents() {
+                this.playPauseBtn.onclick = () => this.togglePlay();
+                this.nextBtn.onclick = () => this.nextSong();
+                this.prevBtn.onclick = () => this.prevSong();
+                this.modeBtn.onclick = () => this.toggleMode();
+                this.listBtn.onclick = () => this.toggleList();
+                this.minimizeBtn.onclick = (e) => { e.stopPropagation(); this.toggleMinimize(); };
+                
+                this.widget.onclick = (e) => {
+                    if (!this.isExpanded && !e.target.closest('.minimize-btn')) {
+                        this.toggleMinimize();
+                    }
+                };
+
+                this.audio.onended = () => this.nextSong(true);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new UIManager();
+            new MusicManager();
+        });
+    </script>
+</body>
+</html>
