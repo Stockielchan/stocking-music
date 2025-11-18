@@ -142,10 +142,10 @@
         }
         @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-        /* ==================== 🎵 悬浮播放器 V3.5 (支持封面) ==================== */
+        /* ==================== 🎵 悬浮播放器 V4.1 (自定义收起图标) ==================== */
         .music-widget {
             position: fixed; z-index: 9000;
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.6);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -156,27 +156,41 @@
         }
         @media (max-width: 768px) { .music-widget { bottom: auto; top: 20px; } }
 
-        .music-widget.expanded { width: 340px; min-height: 110px; border-radius: 20px; display: flex; flex-direction: column; }
+        .music-widget.expanded { width: 340px; min-height: 130px; border-radius: 20px; display: flex; flex-direction: column; }
         .music-widget.collapsed { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        
+        /* 收起时的悬停效果 */
         .music-widget.collapsed:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--color-pink); }
 
-        .player-header { display: flex; align-items: center; padding: 15px; width: 100%; position: relative; }
+        .player-header { display: flex; align-items: center; padding: 15px 15px 5px 15px; width: 100%; position: relative; }
         
-        /* 唱片样式 (支持封面图) */
+        /* 唱片样式 */
         .music-disc {
             width: 60px; height: 60px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-panty), var(--color-pink)); /* 默认背景 */
-            background-size: cover; background-position: center; /* 图片适配 */
+            background: linear-gradient(135deg, var(--color-panty), var(--color-pink));
+            background-size: cover; background-position: center;
             border: 3px solid rgba(255,255,255,0.8);
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             flex-shrink: 0; transition: 0.5s; pointer-events: none;
         }
-        /* 当有图片时，去掉文字 */
         .music-disc.has-cover { color: transparent; }
 
-        .music-widget.collapsed .music-disc { background: transparent !important; border: none; box-shadow: none; }
-        .music-widget.collapsed::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(255,255,255,0.4); z-index: -1; }
+        /* 👇【核心修改】收起状态下的样式 */
+        .music-widget.collapsed .music-disc { 
+            /* 强制显示 musicmenu.jpg */
+            background-image: url('https://stockielchan.github.io/stocking-music/musicmenu.jpg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-color: transparent !important;
+            border: 2px solid white; /* 加个白边更好看 */
+            box-shadow: none; 
+            color: transparent !important; /* 隐藏音符 */
+        }
+        
+        /* 隐藏收起时的默认装饰 */
+        .music-widget.collapsed .music-disc::before { display: none !important; }
+        .music-widget.collapsed::after { display: none !important; }
         
         .rotate { animation: spin 6s linear infinite; }
         .paused { animation-play-state: paused; }
@@ -184,9 +198,23 @@
 
         .player-content { flex: 1; margin-left: 15px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
         .music-widget.collapsed .player-content { display: none; }
-        .song-title { font-size: 0.9rem; font-weight: 700; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; }
+        .song-title { font-size: 0.9rem; font-weight: 700; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
 
-        /* 控制按钮样式 */
+        .progress-container {
+            display: flex; align-items: center; gap: 8px; font-size: 0.7rem; color: #666;
+            width: 100%; margin-bottom: 4px;
+        }
+        .progress-slider {
+            flex: 1; -webkit-appearance: none; height: 4px; border-radius: 2px;
+            background: #e0e0e0; outline: none; cursor: pointer;
+        }
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%;
+            background: var(--color-pink); box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+        }
+        .progress-slider::-webkit-slider-thumb:active { transform: scale(1.3); }
+
         .controls-row { display: flex; align-items: center; gap: 10px; }
         .ctrl-btn {
             background: none; border: none; cursor: pointer; color: #666; font-size: 1.1rem;
@@ -194,15 +222,8 @@
         }
         .ctrl-btn:hover { background: rgba(255,255,255,0.5); color: var(--color-pink); }
         
-        /* 🌈 播放模式按钮颜色 */
-        .ctrl-btn.mode-loop { 
-            color: var(--color-pink); 
-            text-shadow: 0 0 8px rgba(255, 135, 171, 0.5); font-weight: bold;
-        }
-        .ctrl-btn.mode-random { 
-            color: var(--color-stocking); 
-            text-shadow: 0 0 8px rgba(195, 157, 255, 0.5); font-weight: bold;
-        }
+        .ctrl-btn.mode-loop { color: var(--color-pink); text-shadow: 0 0 8px rgba(255, 135, 171, 0.5); font-weight: bold; }
+        .ctrl-btn.mode-random { color: var(--color-stocking); text-shadow: 0 0 8px rgba(195, 157, 255, 0.5); font-weight: bold; }
 
         .playlist-panel { width: 100%; max-height: 0; overflow-y: auto; background: rgba(255,255,255,0.5); transition: 0.3s; border-top: 1px solid rgba(255,255,255,0.3); }
         .playlist-panel.show { max-height: 200px; }
@@ -327,13 +348,20 @@
         </div>
     </main>
 
-    <!-- 🎵 悬浮播放器 -->
+    <!-- 🎵 悬浮播放器 (带进度条) -->
     <div class="music-widget expanded" id="musicWidget">
         <button class="minimize-btn" id="minimizeBtn" title="最小化">−</button>
         <div class="player-header">
             <div class="music-disc" id="disc">♪</div>
             <div class="player-content">
                 <div class="song-title" id="songTitle">Connecting...</div>
+                
+                <div class="progress-container">
+                    <span id="currTime">0:00</span>
+                    <input type="range" class="progress-slider" id="progressBar" value="0" min="0" max="100">
+                    <span id="totalTime">0:00</span>
+                </div>
+
                 <div class="controls-row">
                     <button class="ctrl-btn" id="modeBtn" title="切换模式">🔁</button>
                     <button class="ctrl-btn" id="prevBtn">⏮</button>
@@ -515,7 +543,7 @@
             }
         }
 
-        /* ==================== 🎵 音乐播放器管理器 (支持封面版) ==================== */
+        /* ==================== 🎵 音乐播放器管理器 ==================== */
         class MusicManager {
             constructor() {
                 this.baseUrl = "https://stockielchan.github.io/stocking-music/";
@@ -533,6 +561,10 @@
                 this.modeBtn = document.getElementById('modeBtn');
                 this.listBtn = document.getElementById('listBtn');
                 this.minimizeBtn = document.getElementById('minimizeBtn');
+                
+                this.progressBar = document.getElementById('progressBar');
+                this.currTimeEl = document.getElementById('currTime');
+                this.totalTimeEl = document.getElementById('totalTime');
 
                 this.playlist = [];
                 this.currentIndex = 0;
@@ -545,6 +577,8 @@
                     { icon: '🔂', name: '单曲循环', class: 'mode-loop' },
                     { icon: '🔀', name: '随机播放', class: 'mode-random' }
                 ];
+                
+                this.isDraggingProgress = false;
 
                 this.init();
             }
@@ -565,7 +599,6 @@
                     this.playlist = data.map(item => ({
                         title: item.title,
                         url: this.baseUrl + encodeURIComponent(item.file),
-                        // 新增：读取封面字段，如果没有就为 null
                         cover: item.cover ? this.baseUrl + encodeURIComponent(item.cover) : null
                     }));
 
@@ -594,7 +627,7 @@
             setupDraggable() {
                 let isDragging = false, startX, startY, initialLeft, initialTop;
                 const startDrag = (e) => {
-                    if (e.target.closest('button') || e.target.closest('.playlist-panel')) return;
+                    if (e.target.closest('button') || e.target.closest('.playlist-panel') || e.target.closest('.progress-container')) return;
                     isDragging = true;
                     this.widget.style.transition = 'none';
                     const touch = e.touches ? e.touches[0] : e;
@@ -630,13 +663,12 @@
                 this.audio.src = song.url;
                 this.titleEl.textContent = song.title;
                 
-                // 💿 封面更新逻辑
                 if (song.cover) {
                     this.disc.style.backgroundImage = `url('${song.cover}')`;
-                    this.disc.classList.add('has-cover'); // 隐藏文字
+                    this.disc.classList.add('has-cover'); 
                     this.disc.textContent = ''; 
                 } else {
-                    this.disc.style.backgroundImage = ''; // 恢复默认渐变
+                    this.disc.style.backgroundImage = '';
                     this.disc.classList.remove('has-cover');
                     this.disc.textContent = '♪';
                 }
@@ -645,6 +677,11 @@
                 items.forEach(el => el.classList.remove('current'));
                 if (items[index]) items[index].classList.add('current');
                 
+                this.progressBar.value = 0;
+                this.currTimeEl.textContent = "0:00";
+                this.totalTimeEl.textContent = "0:00";
+                this.updateProgressStyle(0);
+
                 if (autoPlay) {
                     this.audio.play().catch(() => {});
                     this.isPlaying = true;
@@ -687,7 +724,6 @@
                 const mode = this.modes[this.playMode];
                 this.modeBtn.textContent = mode.icon;
                 
-                // 切换样式
                 this.modeBtn.classList.remove('mode-loop', 'mode-random');
                 if (mode.class) this.modeBtn.classList.add(mode.class);
 
@@ -724,6 +760,17 @@
                     this.playlistPanel.appendChild(item);
                 });
             }
+            
+            formatTime(s) {
+                if (isNaN(s)) return "0:00";
+                const m = Math.floor(s / 60);
+                const sec = Math.floor(s % 60);
+                return `${m}:${sec < 10 ? '0' + sec : sec}`;
+            }
+
+            updateProgressStyle(percent) {
+                this.progressBar.style.background = `linear-gradient(to right, var(--color-pink) ${percent}%, #e0e0e0 ${percent}%)`;
+            }
 
             bindEvents() {
                 this.playPauseBtn.onclick = () => this.togglePlay();
@@ -736,6 +783,36 @@
                     if (!this.isExpanded && !e.target.closest('.minimize-btn')) this.toggleMinimize();
                 };
                 this.audio.onended = () => this.nextSong(true);
+                
+                this.audio.addEventListener('timeupdate', () => {
+                    if (this.isDraggingProgress) return;
+                    const curr = this.audio.currentTime;
+                    const total = this.audio.duration;
+                    if (total) {
+                        const percent = (curr / total) * 100;
+                        this.progressBar.value = percent;
+                        this.updateProgressStyle(percent);
+                        this.currTimeEl.textContent = this.formatTime(curr);
+                    }
+                });
+                
+                this.audio.addEventListener('loadedmetadata', () => {
+                    this.totalTimeEl.textContent = this.formatTime(this.audio.duration);
+                });
+
+                this.progressBar.addEventListener('input', (e) => {
+                    this.isDraggingProgress = true;
+                    const percent = e.target.value;
+                    this.updateProgressStyle(percent);
+                    const time = (percent / 100) * this.audio.duration;
+                    this.currTimeEl.textContent = this.formatTime(time);
+                });
+                
+                this.progressBar.addEventListener('change', (e) => {
+                    this.isDraggingProgress = false;
+                    const percent = e.target.value;
+                    this.audio.currentTime = (percent / 100) * this.audio.duration;
+                });
             }
         }
 
