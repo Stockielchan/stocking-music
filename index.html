@@ -142,7 +142,7 @@
         }
         @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-        /* ==================== 🎵 悬浮播放器 V4.1 (自定义收起图标) ==================== */
+        /* ==================== 🎵 悬浮播放器 V4.5 (修复图片) ==================== */
         .music-widget {
             position: fixed; z-index: 9000;
             background: rgba(255, 255, 255, 0.85);
@@ -157,9 +157,14 @@
         @media (max-width: 768px) { .music-widget { bottom: auto; top: 20px; } }
 
         .music-widget.expanded { width: 340px; min-height: 130px; border-radius: 20px; display: flex; flex-direction: column; }
-        .music-widget.collapsed { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
         
-        /* 收起时的悬停效果 */
+        /* 收起状态 */
+        .music-widget.collapsed { 
+            width: 60px; height: 60px; 
+            border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center;
+            padding: 0 !important;
+        }
         .music-widget.collapsed:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--color-pink); }
 
         .player-header { display: flex; align-items: center; padding: 15px 15px 5px 15px; width: 100%; position: relative; }
@@ -173,22 +178,25 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             flex-shrink: 0; transition: 0.5s; pointer-events: none;
+            box-sizing: border-box;
         }
         .music-disc.has-cover { color: transparent; }
 
-        /* 👇【核心修改】收起状态下的样式 */
+        /* 👇【核心修改】收起时 CSS 只负责重置，图片由 JS 动态控制 */
         .music-widget.collapsed .music-disc { 
-            /* 强制显示 musicmenu.jpg */
-            background-image: url('https://stockielchan.github.io/stocking-music/musicmenu.jpg') !important;
+            width: 100% !important; height: 100% !important; margin: 0 !important;
+            border-radius: 50% !important;
+            border: 2px solid white !important; 
+            box-shadow: none !important;
+            color: transparent !important;
+            
+            /* 移除 CSS 写死的背景图，防止覆盖 JS */
+            background-color: transparent !important; 
             background-size: cover !important;
-            background-position: center !important;
-            background-color: transparent !important;
-            border: 2px solid white; /* 加个白边更好看 */
-            box-shadow: none; 
-            color: transparent !important; /* 隐藏音符 */
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
         }
         
-        /* 隐藏收起时的默认装饰 */
         .music-widget.collapsed .music-disc::before { display: none !important; }
         .music-widget.collapsed::after { display: none !important; }
         
@@ -548,6 +556,9 @@
             constructor() {
                 this.baseUrl = "https://stockielchan.github.io/stocking-music/";
                 this.jsonUrl = this.baseUrl + "music.json?t=" + new Date().getTime(); 
+                
+                // 🎵【核心修复】强制收起时的图片路径
+                this.menuIconUrl = this.baseUrl + "musicmenu.jpg?t=" + new Date().getTime();
 
                 this.widget = document.getElementById('musicWidget');
                 this.audio = document.getElementById('bgmAudio');
@@ -663,14 +674,9 @@
                 this.audio.src = song.url;
                 this.titleEl.textContent = song.title;
                 
-                if (song.cover) {
-                    this.disc.style.backgroundImage = `url('${song.cover}')`;
-                    this.disc.classList.add('has-cover'); 
-                    this.disc.textContent = ''; 
-                } else {
-                    this.disc.style.backgroundImage = '';
-                    this.disc.classList.remove('has-cover');
-                    this.disc.textContent = '♪';
+                // 只有在展开状态下才更新封面，避免影响收起状态的自定义图
+                if (this.isExpanded) {
+                    this.updateDiscCover(song.cover);
                 }
 
                 const items = this.playlistPanel.querySelectorAll('.playlist-item');
@@ -686,6 +692,19 @@
                     this.audio.play().catch(() => {});
                     this.isPlaying = true;
                     this.updatePlayUI();
+                }
+            }
+
+            // 🖼️ 封面更新辅助函数
+            updateDiscCover(coverUrl) {
+                if (coverUrl) {
+                    this.disc.style.backgroundImage = `url('${coverUrl}')`;
+                    this.disc.classList.add('has-cover'); 
+                    this.disc.textContent = ''; 
+                } else {
+                    this.disc.style.backgroundImage = '';
+                    this.disc.classList.remove('has-cover');
+                    this.disc.textContent = '♪';
                 }
             }
 
@@ -738,15 +757,27 @@
 
             toggleMinimize() {
                 this.isExpanded = !this.isExpanded;
+                
                 if (this.isExpanded) {
+                    // 展开：恢复界面
                     this.widget.classList.remove('collapsed');
                     this.widget.classList.add('expanded');
                     this.minimizeBtn.style.display = 'block';
+                    
+                    // 恢复当前播放的封面
+                    const currentCover = this.playlist[this.currentIndex]?.cover;
+                    this.updateDiscCover(currentCover);
                 } else {
+                    // 收起：变圆
                     this.widget.classList.remove('expanded');
                     this.widget.classList.add('collapsed');
                     this.minimizeBtn.style.display = 'none';
                     this.playlistPanel.classList.remove('show');
+                    
+                    // 🚀【核心逻辑】强制使用自定义图片，覆盖原封面
+                    this.disc.style.backgroundImage = `url('${this.menuIconUrl}')`;
+                    this.disc.classList.add('has-cover');
+                    this.disc.textContent = '';
                 }
             }
 
