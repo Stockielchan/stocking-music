@@ -65,7 +65,7 @@
             font-size: clamp(3rem, 12vw, 9rem);
             line-height: 1; font-weight: 900; margin-bottom: 0.3em;
         }
-        .title-panty { background: linear-gradient(120deg, #ffea7f, #ff87ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .title-panty { background: linear-gradient(120deg, #ffea7f, #ff87ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }  
         .title-stocking { background: linear-gradient(120deg, #c39dff, #ff87ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { font-size: 0.95rem; color: var(--color-text-light); font-weight: 500; opacity: 0.9; }
         .golden-divider {
@@ -801,5 +801,20 @@
             new MusicManager();
         });
     </script>
+    <!-- 插入到 </body> 这一行之前 -->
+<script>
+    // 自动向外部发送高度信息
+    function sendHeight() {
+        // 获取网页真实高度
+        const height = document.body.scrollHeight; 
+        // 发送给 SillyTavern
+        window.parent.postMessage({ frameHeight: height }, '*');
+    }
+    // 监听加载、调整窗口、点击操作（比如展开歌单）
+    window.addEventListener('load', sendHeight);
+    window.addEventListener('resize', sendHeight);
+    document.addEventListener('click', () => setTimeout(sendHeight, 300)); // 点击后延时检测高度变化
+    setInterval(sendHeight, 1000); // 每秒检查一次，确保万无一失
+</script>
 </body>
 </html>
