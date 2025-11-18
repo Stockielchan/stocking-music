@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P&S Music Player</title>
+    
+    <!-- 引入字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==================== 全局样式 ==================== */
+        :root {
+            --color-pink: #ff87ab;
+            --color-stocking: #c39dff;
+            --color-cyan: #00e5ff;
+            --bg-glass: rgba(255, 255, 255, 0.75);
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* P&S 标志性渐变背景 */
+            background: linear-gradient(160deg, #ffea7f 0%, #ff87ab 45%, #c39dff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* 防止出现滚动条 */
+        }
+
+        /* ==================== 播放器卡片 ==================== */
+        .player-card {
+            width: 100%;
+            max-width: 380px; /* 卡片最大宽度 */
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 30px;
+            padding: 30px 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* 唱片区域 */
+        .disc-wrapper {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffea7f, #ff87ab);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .music-disc {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+        }
+        
+        /* 旋转动画 */
+        .rotate { animation: spin 10s linear infinite; }
+        .paused { animation-play-state: paused; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* 歌曲信息 */
+        .song-info {
+            text-align: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .song-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .song-status {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* 进度条 */
+        .progress-area {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+        .progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--color-pink);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        .progress-bar::-webkit-slider-thumb:active { transform: scale(1.3); }
+
+        /* 控制按钮 */
+        .controls {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-mode { font-size: 1.2rem; width: 40px; height: 40px; }
+        .btn-prev, .btn-next { font-size: 1.8rem; width: 50px; height: 50px; }
+        
+        .btn-play {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--color-pink), var(--color-stocking));
+            border-radius: 50%;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 20px rgba(255, 135, 171, 0.4);
+        }
+        
+        .btn:hover { transform: scale(1.1); color: var(--color-pink); }
+        .btn-play:hover { transform: scale(1.05) translateY(-2px); color: white; }
+        .btn:active { transform: scale(0.95); }
+
+        /* 模式激活颜色 */
+        .mode-loop { color: var(--color-pink) !important; text-shadow: 0 0 8px rgba(255,135,171,0.5); }
+        .mode-random { color: var(--color-stocking) !important; text-shadow: 0 0 8px rgba(195,157,255,0.5); }
+
+        /* 歌单列表 */
+        .playlist-box {
+            width: 100%;
+            max-height: 0;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.4);
+            border-radius: 15px;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .playlist-box.show {
+            max-height: 180px; /* 展开高度 */
+            margin-top: 10px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .playlist-item {
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            color: #444;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .playlist-item:last-child { border-bottom: none; }
+        .playlist-item:hover { background: rgba(255,255,255,0.6); }
+        
+        .playlist-item.active {
+            color: var(--color-pink);
+            font-weight: 700;
+            background: rgba(255, 135, 171, 0.1);
+        }
+        .playlist-item.active::before {
+            content: '♪';
+            margin-right: 8px;
+        }
+
+        /* 滚动条美化 */
+        .playlist-box::-webkit-scrollbar { width: 4px; }
+        .playlist-box::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 播放器主卡片 -->
+    <div class="player-card">
+        <!-- 唱片封面 -->
+        <div class="disc-wrapper">
+            <div class="music-disc" id="disc"></div>
+        </div>
+
+        <!-- 信息区 -->
+        <div class="song-info">
+            <div class="song-title" id="songTitle">Loading...</div>
+            <div class="song-status" id="songStatus">P&S Radio Station</div>
+        </div>
+
+        <!-- 进度条 -->
+        <div class="progress-area">
+            <span id="currTime">0:00</span>
+            <input type="range" class="progress-bar" id="progressBar" value="0" min="0" max="100">
+            <span id="totalTime">0:00</span>
+        </div>
+
+        <!-- 控制区 -->
+        <div class="controls">
+            <button class="btn btn-mode" id="modeBtn" title="播放模式">🔁</button>
+            <button class="btn btn-prev" id="prevBtn" title="上一首">⏮</button>
+            <button class="btn btn-play" id="playBtn" title="播放/暂停">▶</button>
+            <button class="btn btn-next" id="nextBtn" title="下一首">⏭</button>
+            <button class="btn btn-mode" id="listBtn" title="歌单">📜</button>
+        </div>
+
+        <!-- 歌单列表 -->
+        <div class="playlist-box" id="playlistBox">
+            <!-- JS 填充列表 -->
+        </div>
+    </div>
+
+    <audio id="bgmAudio" preload="none"></audio>
+
+    <script>
+        class MusicPlayer {
+            constructor() {
+                // 🟢 配置区域：GitHub 地址
+                this.baseUrl = "https://stockielchan.github.io/stocking-music/";
+                this.jsonUrl = this.baseUrl + "music.json?t=" + new Date().getTime();
+                // 默认封面图
+                this.defaultCover = this.baseUrl + "musicmenu.jpg?t=" + new Date().getTime();
+
+                // DOM 元素
+                this.audio = document.getElementById('bgmAudio');
+                this.disc = document.getElementById('disc');
+                this.titleEl = document.getElementById('songTitle');
+                this.statusEl = document.getElementById('songStatus');
+                this.progressBar = document.getElementById('progressBar');
+                this.currTimeEl = document.getElementById('currTime');
+                this.totalTimeEl = document.getElementById('totalTime');
+                this.playlistBox = document.getElementById('playlistBox');
+
+                this.playBtn = document.getElementById('playBtn');
+                this.prevBtn = document.getElementById('prevBtn');
+                this.nextBtn = document.getElementById('nextBtn');
+                this.modeBtn = document.getElementById('modeBtn');
+                this.listBtn = document.getElementById('listBtn');
+
+                // 状态
+                this.playlist = [];
+                this.currentIndex = 0;
+                this.isPlaying = false;
+                this.isDragging = false;
+                
+                this.playMode = 0; // 0:顺序, 1:单曲, 2:随机
+                this.modes = [
+                    { icon: '🔁', name: '顺序播放', class: '' },
+                    { icon: '🔂', name: '单曲循环', class: 'mode-loop' },
+                    { icon: '🔀', name: '随机播放', class: 'mode-random' }
+                ];
+
+                this.init();
+            }
+
+            async init() {
+                this.bindEvents();
+                await this.fetchMusic();
+                // 初始化默认封面
+                this.updateCover(null);
+            }
+
+            /* 1. 获取 GitHub 歌单 */
+            async fetchMusic() {
+                try {
+                    const res = await fetch(this.jsonUrl);
+                    if (!res.ok) throw new Error("Config Error");
+                    const data = await res.json();
+
+                    this.playlist = data.map(item => ({
+                        title: item.title,
+                        url: this.baseUrl + encodeURIComponent(item.file),
+                        cover: item.cover ? this.baseUrl + encodeURIComponent(item.cover) : null
+                    }));
+
+                    if (this.playlist.length > 0) {
+                        this.renderPlaylist();
+                        this.loadSong(0, false);
+                        this.titleEl.textContent = this.playlist[0].title;
+                    } else {
+                        this.titleEl.textContent = "歌单为空";
+                    }
+                } catch (e) {
+                    console.error(e);
+                    this.titleEl.textContent = "加载失败";
+                    this.statusEl.textContent = "无法连接 GitHub";
+                }
+            }
+
+            /* 2. 渲染歌单 */
+            renderPlaylist() {
+                this.playlistBox.innerHTML = '';
+                this.playlist.forEach((song, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'playlist-item';
+                    div.textContent = `${i + 1}. ${song.title}`;
+                    div.onclick = () => this.loadSong(i, true);
+                    this.playlistBox.appendChild(div);
+                });
+            }
+
+            /* 3. 加载歌曲 */
+            loadSong(index, autoPlay = true) {
+                if (!this.playlist[index]) return;
+                this.currentIndex = index;
+                const song = this.playlist[index];
+
+                this.audio.src = song.url;
+                this.titleEl.textContent = song.title;
+                this.statusEl.textContent = song.artist || "P&S OST"; // 如果JSON里没有artist就用默认
+                
+                this.updateCover(song.cover);
+                this.highlightPlaylist(index);
+
+                // 重置进度
+                this.progressBar.value = 0;
+                this.updateProgressBg(0);
+                this.currTimeEl.textContent = "0:00";
+
+                if (autoPlay) {
+                    this.play();
+                }
+            }
+
+            updateCover(url) {
+                const imgUrl = url || this.defaultCover;
+                this.disc.style.backgroundImage = `url('${imgUrl}')`;
+            }
+
+            highlightPlaylist(index) {
+                const items = this.playlistBox.querySelectorAll('.playlist-item');
+                items.forEach(el => el.classList.remove('active'));
+                if (items[index]) {
+                    items[index].classList.add('active');
+                    items[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            /* 4. 播放控制 */
+            play() {
+                this.audio.play().then(() => {
+                    this.isPlaying = true;
+                    this.updatePlayBtn();
+                    this.disc.classList.remove('paused');
+                    this.disc.classList.add('rotate');
+                }).catch(() => {});
+            }
+
+            pause() {
+                this.audio.pause();
+                this.isPlaying = false;
+                this.updatePlayBtn();
+                this.disc.classList.add('paused');
+            }
+
+            togglePlay() {
+                this.isPlaying ? this.pause() : this.play();
+            }
+
+            updatePlayBtn() {
+                this.playBtn.textContent = this.isPlaying ? '⏸' : '▶';
+            }
+
+            /* 5. 切歌逻辑 */
+            next(isAuto = false) {
+                if (isAuto && this.playMode === 1) { // 单曲循环
+                    this.audio.currentTime = 0;
+                    this.play();
+                    return;
+                }
+                
+                let nextIdx;
+                if (this.playMode === 2) { // 随机
+                    do {
+                        nextIdx = Math.floor(Math.random() * this.playlist.length);
+                    } while (this.playlist.length > 1 && nextIdx === this.currentIndex);
+                } else { // 顺序
+                    nextIdx = (this.currentIndex + 1) % this.playlist.length;
+                }
+                this.loadSong(nextIdx, true);
+            }
+
+            prev() {
+                let prevIdx = (this.currentIndex - 1 + this.playlist.length) % this.playlist.length;
+                this.loadSong(prevIdx, true);
+            }
+
+            toggleMode() {
+                this.playMode = (this.playMode + 1) % 3;
+                const mode = this.modes[this.playMode];
+                this.modeBtn.textContent = mode.icon;
+                
+                // 样式切换
+                this.modeBtn.className = 'btn btn-mode ' + mode.class;
+                
+                // 临时显示提示
+                const oldStatus = this.statusEl.textContent;
+                this.statusEl.textContent = `模式: ${mode.name}`;
+                setTimeout(() => {
+                    if(this.statusEl.textContent.includes('模式')) 
+                        this.statusEl.textContent = oldStatus;
+                }, 1500);
+            }
+
+            toggleList() {
+                this.playlistBox.classList.toggle('show');
+            }
+
+            /* 6. 进度条逻辑 */
+            formatTime(s) {
+                if (isNaN(s)) return "0:00";
+                const m = Math.floor(s / 60);
+                const sec = Math.floor(s % 60);
+                return `${m}:${sec < 10 ? '0' + sec : sec}`;
+            }
+
+            updateProgressBg(percent) {
+                this.progressBar.style.background = `linear-gradient(to right, var(--color-pink) ${percent}%, rgba(0,0,0,0.05) ${percent}%)`;
+            }
+
+            /* 7. 事件绑定 */
+            bindEvents() {
+                this.playBtn.onclick = () => this.togglePlay();
+                this.nextBtn.onclick = () => this.next();
+                this.prevBtn.onclick = () => this.prev();
+                this.modeBtn.onclick = () => this.toggleMode();
+                this.listBtn.onclick = () => this.toggleList();
+
+                // 自动下一首
+                this.audio.onended = () => this.next(true);
+                
+                // 元数据加载
+                this.audio.onloadedmetadata = () => {
+                    this.totalTimeEl.textContent = this.formatTime(this.audio.duration);
+                };
+
+                // 进度更新
+                this.audio.ontimeupdate = () => {
+                    if (this.isDragging) return;
+                    const curr = this.audio.currentTime;
+                    const total = this.audio.duration;
+                    if (total) {
+                        const percent = (curr / total) * 100;
+                        this.progressBar.value = percent;
+                        this.updateProgressBg(percent);
+                        this.currTimeEl.textContent = this.formatTime(curr);
+                    }
+                };
+
+                // 拖动进度条
+                this.progressBar.oninput = (e) => {
+                    this.isDragging = true;
+                    const percent = e.target.value;
+                    this.updateProgressBg(percent);
+                    this.currTimeEl.textContent = this.formatTime((percent / 100) * this.audio.duration);
+                };
+
+                this.progressBar.onchange = (e) => {
+                    this.isDragging = false;
+                    this.audio.currentTime = (e.target.value / 100) * this.audio.duration;
+                    if (!this.isPlaying) this.play();
+                };
+            }
+        }
+
+        new MusicPlayer();
+    </script>
+</body>
+</html>
