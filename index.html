@@ -142,14 +142,14 @@
         }
         @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-        /* ==================== 🎵 悬浮播放器 V4.5 (修复图片) ==================== */
+        /* ==================== 🎵 悬浮播放器 V6.0 (实体图片版) ==================== */
         .music-widget {
             position: fixed; z-index: 9000;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.6);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: width 0.4s, height 0.4s, border-radius 0.4s;
+            transition: width 0.3s, height 0.3s, border-radius 0.3s, left 0.3s ease-out, top 0.3s ease-out;
             overflow: hidden;
             bottom: 30px; left: 30px;
             touch-action: none; cursor: move;
@@ -158,18 +158,41 @@
 
         .music-widget.expanded { width: 340px; min-height: 130px; border-radius: 20px; display: flex; flex-direction: column; }
         
-        /* 收起状态 */
+        /* ⬇️ 收起状态 */
         .music-widget.collapsed { 
             width: 60px; height: 60px; 
             border-radius: 50%; 
             display: flex; justify-content: center; align-items: center;
-            padding: 0 !important;
+            padding: 0 !important; 
+            background: none !important; /* 去掉背景 */
+            border: none !important; /* 去掉边框 */
         }
-        .music-widget.collapsed:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--color-pink); }
+        .music-widget.collapsed:hover { transform: scale(1.05); }
 
-        .player-header { display: flex; align-items: center; padding: 15px 15px 5px 15px; width: 100%; position: relative; }
+        /* ⬇️ 核心：这个是收起后显示的实体图片 */
+        #floatIcon {
+            display: none; /* 默认隐藏，只有收起时显示 */
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover; /* 强制填满圆形，自动居中 */
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(255, 135, 171, 0.6);
+            pointer-events: none; /* 让点击事件穿透给父级 */
+        }
         
-        /* 唱片样式 */
+        /* 当悬浮窗收起时，显示这张图片 */
+        .music-widget.collapsed #floatIcon { display: block !important; }
+        
+        /* 当悬浮窗收起时，隐藏所有播放器内容 */
+        .music-widget.collapsed .player-header,
+        .music-widget.collapsed .playlist-panel,
+        .music-widget.collapsed .minimize-btn {
+            display: none !important;
+        }
+
+        /* 播放器内部样式 (展开时) */
+        .player-header { display: flex; align-items: center; padding: 15px 15px 5px 15px; width: 100%; position: relative; }
         .music-disc {
             width: 60px; height: 60px; border-radius: 50%;
             background: linear-gradient(135deg, var(--color-panty), var(--color-pink));
@@ -178,34 +201,13 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             flex-shrink: 0; transition: 0.5s; pointer-events: none;
-            box-sizing: border-box;
         }
         .music-disc.has-cover { color: transparent; }
-
-        /* 👇【核心修改】收起时 CSS 只负责重置，图片由 JS 动态控制 */
-        .music-widget.collapsed .music-disc { 
-            width: 100% !important; height: 100% !important; margin: 0 !important;
-            border-radius: 50% !important;
-            border: 2px solid white !important; 
-            box-shadow: none !important;
-            color: transparent !important;
-            
-            /* 移除 CSS 写死的背景图，防止覆盖 JS */
-            background-color: transparent !important; 
-            background-size: cover !important;
-            background-position: center center !important;
-            background-repeat: no-repeat !important;
-        }
-        
-        .music-widget.collapsed .music-disc::before { display: none !important; }
-        .music-widget.collapsed::after { display: none !important; }
-        
         .rotate { animation: spin 6s linear infinite; }
         .paused { animation-play-state: paused; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .player-content { flex: 1; margin-left: 15px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-        .music-widget.collapsed .player-content { display: none; }
         .song-title { font-size: 0.9rem; font-weight: 700; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
 
         .progress-container {
@@ -221,7 +223,6 @@
             background: var(--color-pink); box-shadow: 0 1px 3px rgba(0,0,0,0.3);
             transition: transform 0.1s;
         }
-        .progress-slider::-webkit-slider-thumb:active { transform: scale(1.3); }
 
         .controls-row { display: flex; align-items: center; gap: 10px; }
         .ctrl-btn {
@@ -229,7 +230,6 @@
             width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
         .ctrl-btn:hover { background: rgba(255,255,255,0.5); color: var(--color-pink); }
-        
         .ctrl-btn.mode-loop { color: var(--color-pink); text-shadow: 0 0 8px rgba(255, 135, 171, 0.5); font-weight: bold; }
         .ctrl-btn.mode-random { color: var(--color-stocking); text-shadow: 0 0 8px rgba(195, 157, 255, 0.5); font-weight: bold; }
 
@@ -239,7 +239,6 @@
         .playlist-item.current { color: #d63384; font-weight: 600; background: rgba(255,135,171,0.1); }
 
         .minimize-btn { position: absolute; top: 5px; right: 8px; font-size: 1.2rem; color: #888; background: none; border: none; z-index: 10; }
-        .music-widget.collapsed .minimize-btn { display: none; }
         
         .url-code-block { display: none; } 
     </style>
@@ -356,9 +355,13 @@
         </div>
     </main>
 
-    <!-- 🎵 悬浮播放器 (带进度条) -->
+    <!-- 🎵 悬浮播放器 (V6.0 实体图片版) -->
     <div class="music-widget expanded" id="musicWidget">
         <button class="minimize-btn" id="minimizeBtn" title="最小化">−</button>
+        
+        <!-- ⬇️ 这就是那个缩小时显示的图片，默认隐藏 -->
+        <img id="floatIcon" src="" alt="Music">
+
         <div class="player-header">
             <div class="music-disc" id="disc">♪</div>
             <div class="player-content">
@@ -557,10 +560,13 @@
                 this.baseUrl = "https://stockielchan.github.io/stocking-music/";
                 this.jsonUrl = this.baseUrl + "music.json?t=" + new Date().getTime(); 
                 
-                // 🎵【核心修复】强制收起时的图片路径
+                // 🎵 图片地址
                 this.menuIconUrl = this.baseUrl + "musicmenu.jpg?t=" + new Date().getTime();
 
                 this.widget = document.getElementById('musicWidget');
+                this.floatIcon = document.getElementById('floatIcon'); // 获取新加的图片元素
+                this.floatIcon.src = this.menuIconUrl; // 初始化图片
+
                 this.audio = document.getElementById('bgmAudio');
                 this.disc = document.getElementById('disc');
                 this.titleEl = document.getElementById('songTitle');
@@ -657,7 +663,36 @@
                     this.widget.style.left = `${initialLeft + dx}px`;
                     this.widget.style.top = `${initialTop + dy}px`;
                 };
-                const stopDrag = () => { isDragging = false; this.widget.style.transition = ''; };
+                const stopDrag = () => { 
+                    if (isDragging) {
+                        isDragging = false; 
+                        this.widget.style.transition = 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+                        this.snapToScreen();
+                    }
+                };
+
+                // ✋ 智能防卡边逻辑
+                this.snapToScreen = () => {
+                    const rect = this.widget.getBoundingClientRect();
+                    const winWidth = window.innerWidth;
+                    const winHeight = window.innerHeight;
+                    let targetLeft = parseInt(this.widget.style.left);
+                    let targetTop = parseInt(this.widget.style.top);
+
+                    if (rect.left < 0) targetLeft = 10;
+                    if (rect.right > winWidth) targetLeft = winWidth - rect.width - 10;
+                    if (rect.top < 0) targetTop = 10;
+                    if (rect.bottom > winHeight) targetTop = winHeight - rect.height - 10;
+
+                    // 展开时若靠右，往左弹
+                    if (this.isExpanded && (targetLeft + 340 > winWidth)) {
+                        targetLeft = winWidth - 340 - 10;
+                    }
+
+                    this.widget.style.left = `${targetLeft}px`;
+                    this.widget.style.top = `${targetTop}px`;
+                };
+
                 this.widget.addEventListener('mousedown', startDrag);
                 this.widget.addEventListener('touchstart', startDrag, {passive:false});
                 document.addEventListener('mousemove', onDrag);
@@ -674,7 +709,6 @@
                 this.audio.src = song.url;
                 this.titleEl.textContent = song.title;
                 
-                // 只有在展开状态下才更新封面，避免影响收起状态的自定义图
                 if (this.isExpanded) {
                     this.updateDiscCover(song.cover);
                 }
@@ -695,7 +729,6 @@
                 }
             }
 
-            // 🖼️ 封面更新辅助函数
             updateDiscCover(coverUrl) {
                 if (coverUrl) {
                     this.disc.style.backgroundImage = `url('${coverUrl}')`;
@@ -742,10 +775,8 @@
                 this.playMode = (this.playMode + 1) % 3;
                 const mode = this.modes[this.playMode];
                 this.modeBtn.textContent = mode.icon;
-                
                 this.modeBtn.classList.remove('mode-loop', 'mode-random');
                 if (mode.class) this.modeBtn.classList.add(mode.class);
-
                 this.titleEl.textContent = `模式: ${mode.name}`;
                 setTimeout(() => {
                     if(this.titleEl.textContent.includes('模式:')) 
@@ -759,25 +790,19 @@
                 this.isExpanded = !this.isExpanded;
                 
                 if (this.isExpanded) {
-                    // 展开：恢复界面
                     this.widget.classList.remove('collapsed');
                     this.widget.classList.add('expanded');
                     this.minimizeBtn.style.display = 'block';
                     
-                    // 恢复当前播放的封面
                     const currentCover = this.playlist[this.currentIndex]?.cover;
                     this.updateDiscCover(currentCover);
+                    this.snapToScreen(); // 展开回弹
                 } else {
-                    // 收起：变圆
                     this.widget.classList.remove('expanded');
                     this.widget.classList.add('collapsed');
                     this.minimizeBtn.style.display = 'none';
                     this.playlistPanel.classList.remove('show');
-                    
-                    // 🚀【核心逻辑】强制使用自定义图片，覆盖原封面
-                    this.disc.style.backgroundImage = `url('${this.menuIconUrl}')`;
-                    this.disc.classList.add('has-cover');
-                    this.disc.textContent = '';
+                    // 收起时，图片会自动通过 CSS block 显示，无需 JS 操作
                 }
             }
 
@@ -843,6 +868,7 @@
                     this.isDraggingProgress = false;
                     const percent = e.target.value;
                     this.audio.currentTime = (percent / 100) * this.audio.duration;
+                    if (!this.isPlaying) this.play();
                 });
             }
         }
