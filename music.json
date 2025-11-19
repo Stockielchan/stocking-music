@@ -2,51 +2,61 @@
   {
     "title": "Dantencity",
     "file": "Dantencity.mp3",
-    "cover": "ALL-PSG.jpg"
+    "cover": "ALL-PSG.jpg",
+    "lrc": ""
   },
   {
     "title": "Divine",
     "file": "Divine.mp3",
-    "cover": "Divine.jpg"
+    "cover": "Divine.jpg",
+    "lrc": ""
   },
   {
     "title": "Fly Away",
     "file": "Fly-Away.mp3",
-    "cover": "ALL-PSG.jpg"
+    "cover": "ALL-PSG.jpg",
+    "lrc": "Fly-Away.lrc"
   },
   {
     "title": "Milky Way",
     "file": "Milky-Way.mp3",
-    "cover": "Milky-Way.jpg"
+    "cover": "Milky-Way.jpg",
+    "lrc": ""
   },
   {
     "title": "Reckless",
     "file": "Reckless.mp3",
-    "cover": "ALL-PSG.jpg"
+    "cover": "ALL-PSG.jpg",
+    "lrc": ""
+  },
+  {
+    "title": "SANDA",
+    "file": "SANDA.mp3",
+    "cover": "SANDA.jpg",
+    "lrc": ""
   },
   {
     "title": "Scanty & KneeSocks",
     "file": "Scanty&KneeSocks.mp3",
-    "cover": "ALL-PSG.jpg"
+    "cover": "ALL-PSG.jpg",
+    "lrc": ""
   },
   {
-    "title": "SANDA(外添加)",
-    "file": "SANDA.mp3",
-    "cover": "SANDA.jpg"
-  },
-  {
-    "title": "One Last Kiss(外添加)",
+    "title": "One Last Kiss",
     "file": "OneLastKiss.mp3",
-    "cover": "OneLastKiss.jpg"
+    "cover": "OneLastKiss.jpg",
+    "lrc": ""
   },
   {
-    "title": "だから僕は音楽を辞めた(外添加)",
+    "title": "だから僕は音楽を辞めた",
     "file": "syw.mp3",
-    "cover": "syw.jpg"
+    "cover": "syw.jpg",
+    "lrc": ""
   },
   {
-    "title": "アポリア(外添加)",
+    "title": "アポリア",
     "file": "kun.mp3",
-    "cover": "kun.jpg"
+    "cover": "kun.jpg",
+    "lrc": ""
   }
 ]
