@@ -142,7 +142,7 @@
         }
         @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-        /* ==================== 🎵 悬浮播放器 V6.0 (实体图片版) ==================== */
+        /* ==================== 🎵 悬浮播放器 V6.2 (SVG图标版) ==================== */
         .music-widget {
             position: fixed; z-index: 9000;
             background: rgba(255, 255, 255, 0.85);
@@ -158,41 +158,31 @@
 
         .music-widget.expanded { width: 340px; min-height: 130px; border-radius: 20px; display: flex; flex-direction: column; }
         
-        /* ⬇️ 收起状态 */
+        /* 收起状态 */
         .music-widget.collapsed { 
             width: 60px; height: 60px; 
             border-radius: 50%; 
             display: flex; justify-content: center; align-items: center;
             padding: 0 !important; 
-            background: none !important; /* 去掉背景 */
-            border: none !important; /* 去掉边框 */
+            background: none !important; 
+            border: none !important;
         }
         .music-widget.collapsed:hover { transform: scale(1.05); }
 
-        /* ⬇️ 核心：这个是收起后显示的实体图片 */
+        /* 收起时的图片 */
         #floatIcon {
-            display: none; /* 默认隐藏，只有收起时显示 */
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover; /* 强制填满圆形，自动居中 */
-            border: 2px solid white;
+            display: none; width: 60px; height: 60px; border-radius: 50%;
+            object-fit: cover; border: 2px solid white;
             box-shadow: 0 4px 10px rgba(255, 135, 171, 0.6);
-            pointer-events: none; /* 让点击事件穿透给父级 */
+            pointer-events: none;
         }
-        
-        /* 当悬浮窗收起时，显示这张图片 */
         .music-widget.collapsed #floatIcon { display: block !important; }
-        
-        /* 当悬浮窗收起时，隐藏所有播放器内容 */
         .music-widget.collapsed .player-header,
         .music-widget.collapsed .playlist-panel,
-        .music-widget.collapsed .minimize-btn {
-            display: none !important;
-        }
+        .music-widget.collapsed .minimize-btn { display: none !important; }
 
-        /* 播放器内部样式 (展开时) */
         .player-header { display: flex; align-items: center; padding: 15px 15px 5px 15px; width: 100%; position: relative; }
+        
         .music-disc {
             width: 60px; height: 60px; border-radius: 50%;
             background: linear-gradient(135deg, var(--color-panty), var(--color-pink));
@@ -201,8 +191,10 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             flex-shrink: 0; transition: 0.5s; pointer-events: none;
+            box-sizing: border-box;
         }
         .music-disc.has-cover { color: transparent; }
+        
         .rotate { animation: spin 6s linear infinite; }
         .paused { animation-play-state: paused; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -223,22 +215,40 @@
             background: var(--color-pink); box-shadow: 0 1px 3px rgba(0,0,0,0.3);
             transition: transform 0.1s;
         }
+        .progress-slider::-webkit-slider-thumb:active { transform: scale(1.3); }
 
         .controls-row { display: flex; align-items: center; gap: 10px; }
+        
+        /* 👇 按钮SVG样式通用设置 */
         .ctrl-btn {
-            background: none; border: none; cursor: pointer; color: #666; font-size: 1.1rem;
-            width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+            background: none; border: none; cursor: pointer; color: #666; 
+            width: 30px; height: 30px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: 0.2s;
         }
         .ctrl-btn:hover { background: rgba(255,255,255,0.5); color: var(--color-pink); }
-        .ctrl-btn.mode-loop { color: var(--color-pink); text-shadow: 0 0 8px rgba(255, 135, 171, 0.5); font-weight: bold; }
-        .ctrl-btn.mode-random { color: var(--color-stocking); text-shadow: 0 0 8px rgba(195, 157, 255, 0.5); font-weight: bold; }
+        
+        /* SVG 图标尺寸 */
+        .ctrl-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        /* 播放按钮稍大 */
+        #playPauseBtn svg { width: 20px; height: 20px; }
+
+        .ctrl-btn.mode-loop { color: var(--color-pink); filter: drop-shadow(0 0 2px rgba(255, 135, 171, 0.5)); }
+        .ctrl-btn.mode-random { color: var(--color-stocking); filter: drop-shadow(0 0 2px rgba(195, 157, 255, 0.5)); }
 
         .playlist-panel { width: 100%; max-height: 0; overflow-y: auto; background: rgba(255,255,255,0.5); transition: 0.3s; border-top: 1px solid rgba(255,255,255,0.3); }
         .playlist-panel.show { max-height: 200px; }
         .playlist-item { padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 0.85rem; color: #555; cursor: pointer; }
         .playlist-item.current { color: #d63384; font-weight: 600; background: rgba(255,135,171,0.1); }
 
-        .minimize-btn { position: absolute; top: 5px; right: 8px; font-size: 1.2rem; color: #888; background: none; border: none; z-index: 10; }
+        /* 最小化按钮 (SVG) */
+        .minimize-btn { 
+            position: absolute; top: 5px; right: 8px; width: 20px; height: 20px;
+            color: #888; background: none; border: none; z-index: 10; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .minimize-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .minimize-btn:hover { color: var(--color-pink); }
         
         .url-code-block { display: none; } 
     </style>
@@ -355,15 +365,20 @@
         </div>
     </main>
 
-    <!-- 🎵 悬浮播放器 (V6.0 实体图片版) -->
+    <!-- 🎵 悬浮播放器 (全矢量图标版) -->
     <div class="music-widget expanded" id="musicWidget">
-        <button class="minimize-btn" id="minimizeBtn" title="最小化">−</button>
+        <button class="minimize-btn" id="minimizeBtn" title="最小化">
+            <!-- 最小化 SVG -->
+            <svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>
+        </button>
         
-        <!-- ⬇️ 这就是那个缩小时显示的图片，默认隐藏 -->
         <img id="floatIcon" src="" alt="Music">
 
         <div class="player-header">
-            <div class="music-disc" id="disc">♪</div>
+            <div class="music-disc" id="disc">
+                <!-- 默认音符 SVG -->
+                <svg id="defaultNote" viewBox="0 0 24 24" style="width:30px;height:30px;fill:white;"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+            </div>
             <div class="player-content">
                 <div class="song-title" id="songTitle">Connecting...</div>
                 
@@ -374,11 +389,24 @@
                 </div>
 
                 <div class="controls-row">
-                    <button class="ctrl-btn" id="modeBtn" title="切换模式">🔁</button>
-                    <button class="ctrl-btn" id="prevBtn">⏮</button>
-                    <button class="ctrl-btn" id="playPauseBtn" style="font-size: 1.4rem;">▶</button>
-                    <button class="ctrl-btn" id="nextBtn">⏭</button>
-                    <button class="ctrl-btn" id="listBtn" title="歌单">📜</button>
+                    <!-- 模式按钮 -->
+                    <button class="ctrl-btn" id="modeBtn" title="切换模式"></button>
+                    <!-- 上一首 -->
+                    <button class="ctrl-btn" id="prevBtn">
+                        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                    </button>
+                    <!-- 播放/暂停 -->
+                    <button class="ctrl-btn" id="playPauseBtn">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <!-- 下一首 -->
+                    <button class="ctrl-btn" id="nextBtn">
+                        <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                    </button>
+                    <!-- 歌单 -->
+                    <button class="ctrl-btn" id="listBtn" title="歌单">
+                        <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -559,16 +587,15 @@
             constructor() {
                 this.baseUrl = "https://stockielchan.github.io/stocking-music/";
                 this.jsonUrl = this.baseUrl + "music.json?t=" + new Date().getTime(); 
-                
-                // 🎵 图片地址
                 this.menuIconUrl = this.baseUrl + "musicmenu.jpg?t=" + new Date().getTime();
 
                 this.widget = document.getElementById('musicWidget');
-                this.floatIcon = document.getElementById('floatIcon'); // 获取新加的图片元素
-                this.floatIcon.src = this.menuIconUrl; // 初始化图片
+                this.floatIcon = document.getElementById('floatIcon'); 
+                this.floatIcon.src = this.menuIconUrl;
 
                 this.audio = document.getElementById('bgmAudio');
                 this.disc = document.getElementById('disc');
+                this.defaultNote = document.getElementById('defaultNote'); // 音符图标
                 this.titleEl = document.getElementById('songTitle');
                 this.playlistPanel = document.getElementById('playlistPanel');
                 
@@ -589,10 +616,20 @@
                 this.isExpanded = true;
                 
                 this.playMode = 0; 
+                
+                // 🎵 矢量图标定义
+                this.icons = {
+                    play: '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+                    pause: '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>',
+                    seq: '<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v6z"/></svg>',
+                    loop: '<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v6z"/><text x="12" y="15" font-size="8" text-anchor="middle" fill="currentColor" font-weight="bold">1</text></svg>',
+                    random: '<svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>'
+                };
+
                 this.modes = [
-                    { icon: '🔁', name: '顺序播放', class: '' },
-                    { icon: '🔂', name: '单曲循环', class: 'mode-loop' },
-                    { icon: '🔀', name: '随机播放', class: 'mode-random' }
+                    { icon: this.icons.seq, name: '顺序播放', class: '' },
+                    { icon: this.icons.loop, name: '单曲循环', class: 'mode-loop' },
+                    { icon: this.icons.random, name: '随机播放', class: 'mode-random' }
                 ];
                 
                 this.isDraggingProgress = false;
@@ -604,6 +641,7 @@
                 this.setupPosition();
                 this.setupDraggable();
                 this.bindEvents();
+                this.updateModeIcon(); // 初始化模式图标
                 await this.fetchMusicList();
             }
 
@@ -671,7 +709,6 @@
                     }
                 };
 
-                // ✋ 智能防卡边逻辑
                 this.snapToScreen = () => {
                     const rect = this.widget.getBoundingClientRect();
                     const winWidth = window.innerWidth;
@@ -684,7 +721,6 @@
                     if (rect.top < 0) targetTop = 10;
                     if (rect.bottom > winHeight) targetTop = winHeight - rect.height - 10;
 
-                    // 展开时若靠右，往左弹
                     if (this.isExpanded && (targetLeft + 340 > winWidth)) {
                         targetLeft = winWidth - 340 - 10;
                     }
@@ -734,10 +770,11 @@
                     this.disc.style.backgroundImage = `url('${coverUrl}')`;
                     this.disc.classList.add('has-cover'); 
                     this.disc.textContent = ''; 
+                    this.defaultNote.style.display = 'none';
                 } else {
                     this.disc.style.backgroundImage = '';
                     this.disc.classList.remove('has-cover');
-                    this.disc.textContent = '♪';
+                    this.defaultNote.style.display = 'block';
                 }
             }
 
@@ -748,7 +785,7 @@
             }
 
             updatePlayUI() {
-                this.playPauseBtn.textContent = this.isPlaying ? '⏸' : '▶';
+                this.playPauseBtn.innerHTML = this.isPlaying ? this.icons.pause : this.icons.play;
                 if (this.isPlaying) { this.disc.classList.add('rotate'); this.disc.classList.remove('paused'); }
                 else { this.disc.classList.add('paused'); }
             }
@@ -773,10 +810,13 @@
 
             toggleMode() {
                 this.playMode = (this.playMode + 1) % 3;
+                this.updateModeIcon();
+            }
+            
+            updateModeIcon() {
                 const mode = this.modes[this.playMode];
-                this.modeBtn.textContent = mode.icon;
-                this.modeBtn.classList.remove('mode-loop', 'mode-random');
-                if (mode.class) this.modeBtn.classList.add(mode.class);
+                this.modeBtn.innerHTML = mode.icon;
+                this.modeBtn.className = 'ctrl-btn ' + mode.class;
                 this.titleEl.textContent = `模式: ${mode.name}`;
                 setTimeout(() => {
                     if(this.titleEl.textContent.includes('模式:')) 
@@ -802,7 +842,7 @@
                     this.widget.classList.add('collapsed');
                     this.minimizeBtn.style.display = 'none';
                     this.playlistPanel.classList.remove('show');
-                    // 收起时，图片会自动通过 CSS block 显示，无需 JS 操作
+                    this.disc.style.backgroundImage = '';
                 }
             }
 
@@ -869,6 +909,15 @@
                     const percent = e.target.value;
                     this.audio.currentTime = (percent / 100) * this.audio.duration;
                     if (!this.isPlaying) this.play();
+                });
+                
+                // 全局点击关闭歌单
+                document.addEventListener('click', (e) => {
+                    if (this.playlistPanel.classList.contains('show') && 
+                        !this.playlistPanel.contains(e.target) && 
+                        !this.listBtn.contains(e.target)) {
+                        this.toggleList();
+                    }
                 });
             }
         }

@@ -14,7 +14,7 @@
         :root {
             --color-pink: #ff87ab;
             --color-stocking: #c39dff;
-            --bg-glass: rgba(255, 255, 255, 0.75);
+            --bg-glass: rgba(255, 255, 255, 0.85);
             --shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
         }
 
@@ -24,27 +24,34 @@
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(160deg, #ffea7f 0%, #ff87ab 45%, #c39dff 100%);
             min-height: 100vh;
+            /* 居中布局 */
             display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
+            overflow: hidden; /* 禁止页面滚动，只允许卡片内操作 */
         }
 
-        /* 🌈 背景包裹层 */
+        /* 🌈 背景包裹层 (防止背景丢失) */
         .app-wrapper {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(160deg, #ffea7f 0%, #ff87ab 45%, #c39dff 100%);
             display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
         }
 
-        /* 播放器卡片 */
+        /* 播放器卡片 (自适应高度) */
         .player-card {
-            width: 90%; max-width: 380px; height: 600px;
+            width: 90%; 
+            max-width: 360px; /* 稍微调窄一点，更精致 */
+            /* 👇 核心修改：高度不再写死 600px，而是自适应 */
+            height: auto;
+            max-height: 95vh; /* 保证不超过屏幕高度 */
+            aspect-ratio: 9/16; /* 保持大概的比例 */
+            
             background: var(--bg-glass);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 30px; padding: 30px 25px;
+            border-radius: 30px; padding: 20px; /* 减小内边距 */
             box-shadow: var(--shadow);
-            display: flex; flex-direction: column; align-items: center;
+            
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             position: relative; transition: all 0.3s ease;
             z-index: 10;
         }
@@ -53,29 +60,29 @@
         .visual-area {
             width: 100%; flex: 1; position: relative;
             display: flex; justify-content: center; align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 10px; min-height: 180px; /* 保证唱片区域最小高度 */
         }
 
         #visualizer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; opacity: 0.8; pointer-events: none; border-radius: 20px;
+            z-index: 0; opacity: 0.6; pointer-events: none;
         }
 
         .interaction-hint {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            text-align: center; font-size: 0.75rem; color: #888;
+            text-align: center; font-size: 0.7rem; color: #888;
             pointer-events: none; opacity: 0.8; z-index: 5;
             transition: opacity 0.3s;
         }
 
-        /* 唱片 */
+        /* 唱片模式 (稍微缩小一点适配小屏) */
         .disc-wrapper {
-            width: 220px; height: 220px;
-            border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 180px; height: 180px; /* 缩小尺寸 */
+            border-radius: 50%; border: 5px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             position: absolute; transition: opacity 0.4s, transform 0.4s;
             background: linear-gradient(135deg, #ffea7f, #ff87ab);
-            cursor: pointer; bottom: 25px; z-index: 2; overflow: hidden;
+            cursor: pointer; bottom: 20px; z-index: 2; overflow: hidden;
         }
         .music-disc {
             width: 100%; height: 100%; border-radius: 50%;
@@ -87,7 +94,7 @@
         .paused { animation-play-state: paused; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* 歌词 */
+        /* 歌词模式 */
         .lyric-wrapper {
             width: 100%; height: 100%;
             position: absolute; z-index: 3;
@@ -98,14 +105,14 @@
             -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
             cursor: pointer;
         }
-        .lyric-list { list-style: none; padding: 140px 0; margin: 0; transition: transform 0.3s ease-out; }
+        .lyric-list { list-style: none; padding: 100px 0; margin: 0; transition: transform 0.3s ease-out; }
         .lyric-line {
-            color: #555; font-size: 0.95rem; line-height: 1.6;
-            padding: 8px 10px; transition: all 0.3s; min-height: 30px; font-weight: 500;
+            color: #555; font-size: 0.9rem; line-height: 1.6;
+            padding: 6px 10px; transition: all 0.3s; min-height: 24px; font-weight: 500;
         }
         .lyric-line.active {
-            color: var(--color-pink); font-size: 1.2rem; font-weight: 800;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); transform: scale(1.05);
+            color: var(--color-pink); font-size: 1.1rem; font-weight: 800;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9); transform: scale(1.05);
         }
         .lyric-line.pure-music { color: var(--color-stocking); font-weight: bold; font-size: 1rem; margin-top: 50px; opacity: 0.8; }
         .lyric-line span { display: block; font-size: 0.85em; color: #777; font-weight: normal; margin-top: 2px; }
@@ -115,39 +122,43 @@
         .show-lyrics .lyric-wrapper { opacity: 1; pointer-events: auto; transform: scale(1); }
 
         /* 信息 */
-        .song-info { text-align: center; width: 100%; margin-bottom: 15px; z-index: 2; }
-        .song-title { font-size: 1.3rem; font-weight: 700; color: #333; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-info { text-align: center; width: 100%; margin-bottom: 10px; z-index: 2; }
+        .song-title { font-size: 1.3rem; font-weight: 700; color: #333; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .song-status { font-size: 0.8rem; color: #666; font-weight: 500; }
 
         /* 进度条 */
         .progress-area {
             width: 100%; display: flex; align-items: center; gap: 10px;
-            font-size: 0.7rem; color: #555; font-weight: 600; margin-bottom: 20px; z-index: 2;
+            font-size: 0.7rem; color: #555; font-weight: 600; margin-bottom: 15px; z-index: 2;
         }
         .progress-bar {
-            flex: 1; -webkit-appearance: none; height: 6px;
+            flex: 1; -webkit-appearance: none; height: 5px;
             background: rgba(0,0,0,0.1); border-radius: 3px; outline: none; cursor: pointer;
         }
         .progress-bar::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+            -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
             background: var(--color-pink); box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.1s;
         }
 
         /* 按钮 */
-        .controls { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; margin-bottom: 10px; z-index: 2; }
+        .controls { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: 5px; z-index: 2; }
         .btn { background: none; border: none; cursor: pointer; color: #555; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .btn-mode { font-size: 1.2rem; width: 40px; height: 40px; }
-        .btn-prev, .btn-next { font-size: 1.8rem; width: 50px; height: 50px; }
+        .btn-mode { width: 40px; height: 40px; }
+        .btn-prev, .btn-next { width: 45px; height: 45px; }
         .btn-play {
-            width: 64px; height: 64px; background: linear-gradient(135deg, var(--color-pink), var(--color-stocking));
-            border-radius: 50%; color: white; font-size: 1.8rem; box-shadow: 0 8px 20px rgba(255, 135, 171, 0.4);
+            width: 60px; height: 60px; background: linear-gradient(135deg, var(--color-pink), var(--color-stocking));
+            border-radius: 50%; color: white; box-shadow: 0 8px 20px rgba(255, 135, 171, 0.4);
         }
         .btn:hover { transform: scale(1.1); color: var(--color-pink); }
         .btn-play:hover { transform: scale(1.05) translateY(-2px); color: white; }
-        .mode-loop { color: var(--color-pink) !important; text-shadow: 0 0 8px rgba(255,135,171,0.5); font-weight: bold; }
-        .mode-random { color: var(--color-stocking) !important; text-shadow: 0 0 8px rgba(195,157,255,0.5); font-weight: bold; }
+        
+        .mode-loop { color: var(--color-pink) !important; }
+        .mode-random { color: var(--color-stocking) !important; }
 
-        /* 歌单 */
+        .btn svg { width: 24px; height: 24px; fill: currentColor; }
+        .btn-play svg { width: 32px; height: 32px; fill: white; }
+
+        /* 歌单列表 */
         .playlist-box {
             position: absolute; bottom: 0; left: 0; width: 100%; max-height: 0;
             background: rgba(255,255,255,0.95); border-radius: 25px;
@@ -174,7 +185,7 @@
                         <li class="lyric-line">P&S Radio Station</li>
                     </ul>
                 </div>
-                <div class="interaction-hint" id="interactionHint">👆 点击封面显示歌词</div>
+                <div class="interaction-hint" id="interactionHint">点击封面显示歌词</div>
             </div>
 
             <div class="song-info">
@@ -189,11 +200,19 @@
             </div>
 
             <div class="controls">
-                <button class="btn btn-mode" id="modeBtn">🔁</button>
-                <button class="btn btn-prev" id="prevBtn">⏮</button>
-                <button class="btn btn-play" id="playBtn">▶</button>
-                <button class="btn btn-next" id="nextBtn">⏭</button>
-                <button class="btn btn-mode" id="listBtn">📜</button>
+                <button class="btn btn-mode" id="modeBtn" title="切换模式"></button>
+                <button class="btn btn-prev" id="prevBtn">
+                    <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <button class="btn btn-play" id="playBtn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <button class="btn btn-next" id="nextBtn">
+                    <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+                <button class="btn btn-mode" id="listBtn" title="歌单">
+                    <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                </button>
             </div>
 
             <div class="playlist-box" id="playlistBox"></div>
@@ -236,10 +255,17 @@
                 this.hasLyrics = false;
 
                 this.playMode = 0; 
+                this.icons = {
+                    play: '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+                    pause: '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>',
+                    seq: '<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v6z"/></svg>',
+                    loop: '<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v6z"/><text x="12" y="15" font-size="8" text-anchor="middle" fill="currentColor" font-weight="bold">1</text></svg>',
+                    random: '<svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>'
+                };
                 this.modes = [
-                    { icon: '🔁', name: '顺序', class: '' },
-                    { icon: '🔂', name: '单曲', class: 'mode-loop' },
-                    { icon: '🔀', name: '随机', class: 'mode-random' }
+                    { icon: this.icons.seq, name: '顺序', class: '' },
+                    { icon: this.icons.loop, name: '单曲', class: 'mode-loop' },
+                    { icon: this.icons.random, name: '随机', class: 'mode-random' }
                 ];
                 
                 this.audioCtx = null;
@@ -255,9 +281,13 @@
                 this.resizeCanvas();
                 window.addEventListener('resize', () => this.resizeCanvas());
                 this.bindEvents();
+                this.updateModeIcon();
                 await this.fetchMusic();
                 this.updateCover(null);
             }
+
+            // ... (可视化和歌词逻辑保持不变，为了简洁省略部分，逻辑同上) ...
+            // 下面是修复的核心逻辑
 
             initVisualizer() {
                 if (this.isVisualizerInited) return;
@@ -278,30 +308,24 @@
             drawVisualizer() {
                 if (!this.isPlaying) return;
                 requestAnimationFrame(() => this.drawVisualizer());
-                
                 this.analyser.getByteFrequencyData(this.dataArray);
                 const width = this.canvas.width;
                 const height = this.canvas.height;
                 const barWidth = (width / this.dataArray.length) * 0.8;
                 const gap = (width / this.dataArray.length) * 0.2;
-                
                 this.canvasCtx.clearRect(0, 0, width, height);
-                
                 let x = 0;
                 for(let i = 0; i < this.dataArray.length; i++) {
                     const value = this.dataArray[i];
                     const barHeight = (value / 255) * (height * 0.6);
-                    
                     const r = 255;
                     const g = 135 + (255 - value) / 2;
                     const b = 171 + (255 - value) / 2;
-                    
                     this.canvasCtx.fillStyle = `rgba(${r},${g},${b}, 0.6)`;
                     this.canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
                     x += barWidth + gap;
                 }
             }
-            
             resizeCanvas() {
                 this.canvas.width = this.canvas.clientWidth;
                 this.canvas.height = this.canvas.clientHeight;
@@ -336,7 +360,8 @@
                     const div = document.createElement('div');
                     div.className = 'playlist-item';
                     div.textContent = `${i + 1}. ${song.title}`;
-                    div.onclick = () => {
+                    div.onclick = (e) => {
+                        e.stopPropagation(); // 防止冒泡触发全局关闭
                         this.loadSong(i, true);
                         this.toggleList();
                     };
@@ -348,22 +373,18 @@
                 if (!this.playlist[index]) return;
                 this.currentIndex = index;
                 const song = this.playlist[index];
-
                 this.audio.src = song.url;
                 this.titleEl.textContent = song.title;
                 this.statusEl.textContent = "P&S Radio";
                 this.updateCover(song.cover);
-                
                 this.highlightPlaylist(index);
                 this.loadLyrics(song.lrc);
-
                 this.progressBar.value = 0;
                 this.updateProgressBg(0);
                 this.currTimeEl.textContent = "0:00";
-
                 if (autoPlay) this.play();
             }
-
+            
             async loadLyrics(lrcUrl) {
                 this.lyricList.innerHTML = '<li class="lyric-line">Loading...</li>';
                 this.lyrics = [];
@@ -379,7 +400,7 @@
                     } else { this.showPureMusic(); }
                 } catch (e) { this.showPureMusic(); }
             }
-
+            
             showPureMusic() {
                 this.lyricList.innerHTML = '<li class="lyric-line pure-music">[纯音乐，暂无歌词]</li>';
                 this.lyrics = [];
@@ -448,13 +469,18 @@
                 items.forEach(el => el.classList.remove('active'));
                 if (items[index]) {
                     items[index].classList.add('active');
+                    if (this.playlistBox.classList.contains('show')) {
+                        const container = this.playlistBox;
+                        const element = items[index];
+                        const targetTop = element.offsetTop - container.clientHeight / 2 + element.clientHeight / 2;
+                        container.scrollTo({ top: targetTop, behavior: 'smooth' });
+                    }
                 }
             }
 
             play() {
                 if (!this.isVisualizerInited) this.initVisualizer();
                 if (this.audioCtx && this.audioCtx.state === 'suspended') this.audioCtx.resume();
-                
                 this.audio.play().then(() => {
                     this.isPlaying = true;
                     this.updatePlayBtn();
@@ -472,7 +498,7 @@
             }
 
             togglePlay() { this.isPlaying ? this.pause() : this.play(); }
-            updatePlayBtn() { this.playBtn.textContent = this.isPlaying ? '⏸' : '▶'; }
+            updatePlayBtn() { this.playBtn.innerHTML = this.isPlaying ? this.icons.pause : this.icons.play; }
 
             next(isAuto = false) {
                 if (isAuto && this.playMode === 1) {
@@ -495,8 +521,12 @@
 
             toggleMode() {
                 this.playMode = (this.playMode + 1) % 3;
+                this.updateModeIcon();
+            }
+            
+            updateModeIcon() {
                 const mode = this.modes[this.playMode];
-                this.modeBtn.textContent = mode.icon;
+                this.modeBtn.innerHTML = mode.icon;
                 this.modeBtn.className = 'btn btn-mode ' + mode.class;
                 const oldStatus = this.statusEl.textContent;
                 this.statusEl.textContent = `Mode: ${mode.name}`;
@@ -505,23 +535,17 @@
 
             toggleList() { 
                 this.playlistBox.classList.toggle('show');
-                // 👇 只有在打开时才滚动，不影响主界面
                 if (this.playlistBox.classList.contains('show')) {
-                    const items = this.playlistBox.querySelectorAll('.playlist-item');
-                    const activeItem = items[this.currentIndex];
-                    if(activeItem) {
-                        const top = activeItem.offsetTop - this.playlistBox.clientHeight/2 + activeItem.clientHeight/2;
-                        this.playlistBox.scrollTo({ top: top, behavior: 'smooth' });
-                    }
+                    this.highlightPlaylist(this.currentIndex);
                 }
             }
             
             toggleVisual() {
                 this.playerCard.classList.toggle('show-lyrics');
                 if (this.playerCard.classList.contains('show-lyrics')) {
-                    this.interactionHint.textContent = "👇 点击返回封面";
+                    this.interactionHint.textContent = "点击返回封面";
                 } else {
-                    this.interactionHint.textContent = "👆 点击封面显示歌词";
+                    this.interactionHint.textContent = "点击封面显示歌词";
                 }
             }
 
@@ -537,21 +561,14 @@
             }
 
             bindEvents() {
-                // 1. 全局点击监听 (点击空白关闭歌单)
-                document.addEventListener('click', (e) => {
-                    if (this.playlistBox.classList.contains('show')) {
-                        // 如果点击的不是 歌单本身 且 不是 歌单按钮
-                        if (!this.playlistBox.contains(e.target) && !this.listBtn.contains(e.target)) {
-                            this.toggleList();
-                        }
-                    }
-                });
-
                 this.playBtn.onclick = () => this.togglePlay();
                 this.nextBtn.onclick = () => this.next();
                 this.prevBtn.onclick = () => this.prev();
                 this.modeBtn.onclick = () => this.toggleMode();
-                this.listBtn.onclick = () => this.toggleList();
+                this.listBtn.onclick = (e) => {
+                    e.stopPropagation(); // 防止冒泡
+                    this.toggleList();
+                };
                 
                 document.getElementById('discWrapper').onclick = () => this.toggleVisual();
                 document.getElementById('lyricWrapper').onclick = () => this.toggleVisual();
@@ -586,6 +603,16 @@
                     this.audio.currentTime = (e.target.value / 100) * this.audio.duration;
                     if (!this.isPlaying) this.play();
                 };
+
+                // 👇 修复：全局点击关闭歌单
+                document.addEventListener('click', (e) => {
+                    // 如果点击的不是歌单本身 且 不是歌单按钮
+                    if (this.playlistBox.classList.contains('show') && 
+                        !this.playlistBox.contains(e.target) && 
+                        !this.listBtn.contains(e.target)) {
+                        this.toggleList();
+                    }
+                });
             }
         }
 
