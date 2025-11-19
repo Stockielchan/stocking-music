@@ -64,5 +64,11 @@
     "file": "ckts.mp3",
     "cover": "ckts.jpg",
     "lrc": "ckts.lrc"
+  },
+  {
+    "title": "忘れないでベイベー",
+    "file": "wq.mp3",
+    "cover": "wq.jpg",
+    "lrc": "wq.lrc"
   }
 ]
