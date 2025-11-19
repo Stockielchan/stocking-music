@@ -14,18 +14,21 @@
         :root {
             --color-pink: #ff87ab;
             --color-stocking: #c39dff;
-            --bg-glass: rgba(255, 255, 255, 0.85); /* 卡片背景白度 */
-            --shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            --bg-glass: rgba(255, 255, 255, 0.75);
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body, html {
-            width: 100%; height: 100%; overflow: hidden;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(160deg, #ffea7f 0%, #ff87ab 45%, #c39dff 100%);
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
         }
 
-        /* 🌈【核心修复】背景包裹层 */
-        /* 强制把背景色写在这里，而不是 body 上，防止被软件吞掉 */
+        /* 🌈 背景包裹层 */
         .app-wrapper {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(160deg, #ffea7f 0%, #ff87ab 45%, #c39dff 100%);
@@ -35,7 +38,7 @@
 
         /* 播放器卡片 */
         .player-card {
-            width: 90%; max-width: 380px; height: 600px; /* 稍微留点边距 */
+            width: 90%; max-width: 380px; height: 600px;
             background: var(--bg-glass);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 2px solid rgba(255, 255, 255, 0.8);
@@ -53,14 +56,11 @@
             margin-bottom: 10px;
         }
 
-        /* 🎵 可视化画布 */
         #visualizer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; opacity: 0.8; pointer-events: none;
-            border-radius: 20px; /* 防止波形溢出 */
+            z-index: 0; opacity: 0.8; pointer-events: none; border-radius: 20px;
         }
 
-        /* 交互提示 */
         .interaction-hint {
             position: absolute; bottom: 0; left: 0; width: 100%;
             text-align: center; font-size: 0.75rem; color: #888;
@@ -68,7 +68,7 @@
             transition: opacity 0.3s;
         }
 
-        /* 唱片模式 */
+        /* 唱片 */
         .disc-wrapper {
             width: 220px; height: 220px;
             border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.9);
@@ -81,14 +81,13 @@
             width: 100%; height: 100%; border-radius: 50%;
             background-size: cover; background-position: center; background-repeat: no-repeat;
         }
-        /* 隐藏默认伪元素 */
         .music-disc::before, .music-disc::after { display: none !important; }
 
         .rotate { animation: spin 10s linear infinite; }
         .paused { animation-play-state: paused; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* 歌词模式 */
+        /* 歌词 */
         .lyric-wrapper {
             width: 100%; height: 100%;
             position: absolute; z-index: 3;
@@ -99,35 +98,23 @@
             -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
             cursor: pointer;
         }
-        
-        .lyric-list {
-            list-style: none; padding: 140px 0; margin: 0;
-            transition: transform 0.3s ease-out;
-        }
+        .lyric-list { list-style: none; padding: 140px 0; margin: 0; transition: transform 0.3s ease-out; }
         .lyric-line {
             color: #555; font-size: 0.95rem; line-height: 1.6;
-            padding: 8px 10px; transition: all 0.3s;
-            min-height: 30px; font-weight: 500;
+            padding: 8px 10px; transition: all 0.3s; min-height: 30px; font-weight: 500;
         }
         .lyric-line.active {
             color: var(--color-pink); font-size: 1.2rem; font-weight: 800;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-            transform: scale(1.05);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); transform: scale(1.05);
         }
-        .lyric-line.pure-music {
-            color: var(--color-stocking); font-weight: bold; font-size: 1rem;
-            margin-top: 50px; opacity: 0.8;
-        }
-        .lyric-line span { 
-            display: block; font-size: 0.85em; color: #777;
-            font-weight: normal; margin-top: 2px;
-        }
+        .lyric-line.pure-music { color: var(--color-stocking); font-weight: bold; font-size: 1rem; margin-top: 50px; opacity: 0.8; }
+        .lyric-line span { display: block; font-size: 0.85em; color: #777; font-weight: normal; margin-top: 2px; }
         .lyric-line.active span { color: var(--color-stocking); font-weight: 600; }
 
         .show-lyrics .disc-wrapper { opacity: 0; pointer-events: none; transform: scale(0.8); }
         .show-lyrics .lyric-wrapper { opacity: 1; pointer-events: auto; transform: scale(1); }
 
-        /* 歌曲信息 */
+        /* 信息 */
         .song-info { text-align: center; width: 100%; margin-bottom: 15px; z-index: 2; }
         .song-title { font-size: 1.3rem; font-weight: 700; color: #333; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .song-status { font-size: 0.8rem; color: #666; font-weight: 500; }
@@ -143,11 +130,10 @@
         }
         .progress-bar::-webkit-slider-thumb {
             -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
-            background: var(--color-pink); box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: transform 0.1s;
+            background: var(--color-pink); box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.1s;
         }
-        
-        /* 控制按钮 */
+
+        /* 按钮 */
         .controls { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; margin-bottom: 10px; z-index: 2; }
         .btn { background: none; border: none; cursor: pointer; color: #555; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .btn-mode { font-size: 1.2rem; width: 40px; height: 40px; }
@@ -161,7 +147,7 @@
         .mode-loop { color: var(--color-pink) !important; text-shadow: 0 0 8px rgba(255,135,171,0.5); font-weight: bold; }
         .mode-random { color: var(--color-stocking) !important; text-shadow: 0 0 8px rgba(195,157,255,0.5); font-weight: bold; }
 
-        /* 歌单列表 */
+        /* 歌单 */
         .playlist-box {
             position: absolute; bottom: 0; left: 0; width: 100%; max-height: 0;
             background: rgba(255,255,255,0.95); border-radius: 25px;
@@ -176,18 +162,13 @@
 </head>
 <body>
 
-    <!-- 🌈 背景包裹层：确保背景色不丢失 -->
     <div class="app-wrapper">
         <div class="player-card" id="playerCard">
             <div class="visual-area">
-                <!-- 可视化画布 -->
                 <canvas id="visualizer"></canvas>
-                
-                <!-- 唱片 -->
                 <div class="disc-wrapper" id="discWrapper">
                     <div class="music-disc" id="disc"></div>
                 </div>
-                <!-- 歌词 -->
                 <div class="lyric-wrapper" id="lyricWrapper">
                     <ul class="lyric-list" id="lyricList">
                         <li class="lyric-line">P&S Radio Station</li>
@@ -287,7 +268,7 @@
                     this.analyser = this.audioCtx.createAnalyser();
                     source.connect(this.analyser);
                     this.analyser.connect(this.audioCtx.destination);
-                    this.analyser.fftSize = 64; // 减少条数，更粗更复古
+                    this.analyser.fftSize = 64;
                     this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
                     this.isVisualizerInited = true;
                     this.drawVisualizer();
@@ -306,26 +287,17 @@
                 
                 this.canvasCtx.clearRect(0, 0, width, height);
                 
-                // 绘制居中对称波形
                 let x = 0;
                 for(let i = 0; i < this.dataArray.length; i++) {
                     const value = this.dataArray[i];
-                    const barHeight = (value / 255) * (height * 0.6); // 限制最大高度
+                    const barHeight = (value / 255) * (height * 0.6);
                     
-                    // 动态变色：音量越大越红
                     const r = 255;
                     const g = 135 + (255 - value) / 2;
                     const b = 171 + (255 - value) / 2;
                     
                     this.canvasCtx.fillStyle = `rgba(${r},${g},${b}, 0.6)`;
-                    
-                    // 上下对称绘制
-                    const y = (height - barHeight) / 2;
-                    // this.canvasCtx.fillRect(x, y, barWidth, barHeight); // 居中单条
-                    
-                    // 底部绘制
                     this.canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
-                    
                     x += barWidth + gap;
                 }
             }
@@ -381,8 +353,8 @@
                 this.titleEl.textContent = song.title;
                 this.statusEl.textContent = "P&S Radio";
                 this.updateCover(song.cover);
-                this.highlightPlaylist(index);
                 
+                this.highlightPlaylist(index);
                 this.loadLyrics(song.lrc);
 
                 this.progressBar.value = 0;
@@ -476,12 +448,6 @@
                 items.forEach(el => el.classList.remove('active'));
                 if (items[index]) {
                     items[index].classList.add('active');
-                    if (this.playlistBox.classList.contains('show')) {
-                        const container = this.playlistBox;
-                        const element = items[index];
-                        const targetTop = element.offsetTop - container.clientHeight / 2 + element.clientHeight / 2;
-                        container.scrollTo({ top: targetTop, behavior: 'smooth' });
-                    }
                 }
             }
 
@@ -539,8 +505,14 @@
 
             toggleList() { 
                 this.playlistBox.classList.toggle('show');
+                // 👇 只有在打开时才滚动，不影响主界面
                 if (this.playlistBox.classList.contains('show')) {
-                    this.highlightPlaylist(this.currentIndex);
+                    const items = this.playlistBox.querySelectorAll('.playlist-item');
+                    const activeItem = items[this.currentIndex];
+                    if(activeItem) {
+                        const top = activeItem.offsetTop - this.playlistBox.clientHeight/2 + activeItem.clientHeight/2;
+                        this.playlistBox.scrollTo({ top: top, behavior: 'smooth' });
+                    }
                 }
             }
             
@@ -565,6 +537,16 @@
             }
 
             bindEvents() {
+                // 1. 全局点击监听 (点击空白关闭歌单)
+                document.addEventListener('click', (e) => {
+                    if (this.playlistBox.classList.contains('show')) {
+                        // 如果点击的不是 歌单本身 且 不是 歌单按钮
+                        if (!this.playlistBox.contains(e.target) && !this.listBtn.contains(e.target)) {
+                            this.toggleList();
+                        }
+                    }
+                });
+
                 this.playBtn.onclick = () => this.togglePlay();
                 this.nextBtn.onclick = () => this.next();
                 this.prevBtn.onclick = () => this.prev();
