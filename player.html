@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P&S Music Player With Lyrics</title>
+    <title>P&S Music Player</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,11 +40,18 @@
             position: relative; transition: all 0.3s ease;
         }
 
-        /* 顶部显示区 (唱片/歌词切换) */
+        /* 顶部显示区 */
         .visual-area {
             width: 100%; flex: 1; position: relative;
             display: flex; justify-content: center; align-items: center;
-            margin-bottom: 20px; overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .interaction-hint {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            text-align: center; font-size: 0.75rem; color: #888;
+            pointer-events: none; opacity: 0.8;
+            transition: opacity 0.3s;
         }
 
         /* 唱片模式 */
@@ -54,7 +61,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             position: absolute; transition: opacity 0.4s, transform 0.4s;
             background: linear-gradient(135deg, #ffea7f, #ff87ab);
-            cursor: pointer;
+            cursor: pointer; bottom: 25px;
         }
         .music-disc {
             width: 100%; height: 100%; border-radius: 50%;
@@ -81,19 +88,34 @@
             transition: transform 0.3s ease-out;
         }
         .lyric-line {
-            color: #666; font-size: 0.9rem; line-height: 1.8;
-            padding: 6px 10px; transition: all 0.3s;
+            color: #666; font-size: 0.95rem; line-height: 1.6;
+            padding: 8px 10px; transition: all 0.3s;
             min-height: 30px;
         }
         .lyric-line.active {
-            color: var(--color-pink); font-size: 1.1rem; font-weight: 700;
+            color: var(--color-pink); font-size: 1.15rem; font-weight: 700;
             text-shadow: 0 0 10px rgba(255, 135, 171, 0.4);
             transform: scale(1.05);
         }
-        /* 双语歌词的第二行 */
-        .lyric-line span { display: block; font-size: 0.8em; opacity: 0.8; font-weight: normal; }
+        .lyric-line.pure-music {
+            color: var(--color-stocking); font-weight: bold; font-size: 1rem;
+            margin-top: 50px; opacity: 0.8;
+        }
+        
+        /* 👇 歌词翻译样式优化 */
+        .lyric-line span { 
+            display: block; 
+            font-size: 0.85em; /* 翻译字体稍小 */
+            color: #888;       /* 翻译颜色稍淡 */
+            font-weight: normal; 
+            margin-top: 2px;
+        }
+        .lyric-line.active span {
+            color: var(--color-stocking); /* 高亮时翻译变紫色 */
+            font-weight: 500;
+        }
 
-        /* 切换状态类 */
+        /* 切换状态 */
         .show-lyrics .disc-wrapper { opacity: 0; pointer-events: none; transform: scale(0.8); }
         .show-lyrics .lyric-wrapper { opacity: 1; pointer-events: auto; transform: scale(1); }
 
@@ -131,7 +153,7 @@
         .mode-loop { color: var(--color-pink) !important; text-shadow: 0 0 5px rgba(255,135,171,0.5); }
         .mode-random { color: var(--color-stocking) !important; text-shadow: 0 0 5px rgba(195,157,255,0.5); }
 
-        /* 歌单列表 (覆盖层) */
+        /* 歌单列表 */
         .playlist-box {
             position: absolute; bottom: 0; left: 0; width: 100%; max-height: 0;
             background: rgba(255,255,255,0.95); border-radius: 25px;
@@ -147,24 +169,23 @@
 <body>
 
     <div class="player-card" id="playerCard">
-        <!-- 视觉区：唱片/歌词 -->
+        <!-- 视觉区 -->
         <div class="visual-area">
-            <!-- 唱片 -->
-            <div class="disc-wrapper" id="discWrapper" title="点击查看歌词">
+            <div class="disc-wrapper" id="discWrapper">
                 <div class="music-disc" id="disc"></div>
             </div>
-            <!-- 歌词 -->
-            <div class="lyric-wrapper" id="lyricWrapper" title="点击返回封面">
+            <div class="lyric-wrapper" id="lyricWrapper">
                 <ul class="lyric-list" id="lyricList">
                     <li class="lyric-line">P&S Radio Station</li>
                 </ul>
             </div>
+            <div class="interaction-hint" id="interactionHint">👆 点击封面显示歌词</div>
         </div>
 
         <!-- 信息 -->
         <div class="song-info">
             <div class="song-title" id="songTitle">Loading...</div>
-            <div class="song-status" id="songStatus">Tap disc for lyrics</div>
+            <div class="song-status" id="songStatus">P&S Radio</div>
         </div>
 
         <!-- 进度 -->
@@ -206,6 +227,7 @@
                 this.playlistBox = document.getElementById('playlistBox');
                 this.lyricList = document.getElementById('lyricList');
                 this.playerCard = document.getElementById('playerCard');
+                this.interactionHint = document.getElementById('interactionHint');
 
                 this.playBtn = document.getElementById('playBtn');
                 this.prevBtn = document.getElementById('prevBtn');
@@ -217,7 +239,7 @@
                 this.currentIndex = 0;
                 this.isPlaying = false;
                 this.isDragging = false;
-                this.lyrics = []; // 存储解析后的歌词对象数组
+                this.lyrics = [];
                 this.hasLyrics = false;
 
                 this.playMode = 0; 
@@ -267,7 +289,7 @@
                     div.textContent = `${i + 1}. ${song.title}`;
                     div.onclick = () => {
                         this.loadSong(i, true);
-                        this.toggleList(); // 选歌后自动收起列表
+                        this.toggleList();
                     };
                     this.playlistBox.appendChild(div);
                 });
@@ -280,10 +302,10 @@
 
                 this.audio.src = song.url;
                 this.titleEl.textContent = song.title;
+                this.statusEl.textContent = "P&S Radio";
                 this.updateCover(song.cover);
                 this.highlightPlaylist(index);
                 
-                // 加载歌词
                 this.loadLyrics(song.lrc);
 
                 this.progressBar.value = 0;
@@ -293,14 +315,14 @@
                 if (autoPlay) this.play();
             }
 
-            // --- 🎵 歌词核心逻辑 ---
+            // --- 🎵 升级版歌词解析逻辑 ---
             async loadLyrics(lrcUrl) {
-                this.lyricList.innerHTML = '<li class="lyric-line">Loading lyrics...</li>';
+                this.lyricList.innerHTML = '<li class="lyric-line">Loading...</li>';
                 this.lyrics = [];
                 this.hasLyrics = false;
 
                 if (!lrcUrl) {
-                    this.lyricList.innerHTML = '<li class="lyric-line">暂无歌词 / Pure Music</li>';
+                    this.showPureMusic();
                     return;
                 }
 
@@ -312,90 +334,78 @@
                         this.renderLyrics();
                         this.hasLyrics = true;
                     } else {
-                        throw new Error("LRC 404");
+                        this.showPureMusic();
                     }
                 } catch (e) {
-                    this.lyricList.innerHTML = '<li class="lyric-line">歌词加载失败</li>';
+                    this.showPureMusic();
                 }
+            }
+
+            showPureMusic() {
+                this.lyricList.innerHTML = '<li class="lyric-line pure-music">[纯音乐，暂无歌词]</li>';
+                this.lyrics = [];
             }
 
             parseLyrics(text) {
                 const lines = text.split('\n');
                 const regex = /^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)$/;
-                let tempLyrics = [];
+                
+                this.lyrics = [];
+                let currentLyric = null;
 
                 lines.forEach(line => {
-                    const matches = line.trim().match(regex);
+                    const str = line.trim();
+                    if (!str) return;
+
+                    const matches = str.match(regex);
+
                     if (matches) {
+                        // 1. 这是有时间戳的一行 (原文)
                         const min = parseInt(matches[1]);
                         const sec = parseInt(matches[2]);
                         const ms = parseInt(matches[3]);
                         const time = min * 60 + sec + ms / 1000;
                         const content = matches[4].trim();
-                        if (content) {
-                            tempLyrics.push({ time, content });
+                        
+                        currentLyric = { time, content };
+                        this.lyrics.push(currentLyric);
+                    } else {
+                        // 2. 这是没有时间戳的一行 (翻译)
+                        // 把它作为上一行歌词的翻译附加进去
+                        if (currentLyric) {
+                            currentLyric.content += `<span>${str}</span>`;
                         }
                     }
                 });
-
-                // 双语合并优化：如果两个时间戳极其接近（<0.1s），视为同一句的双语翻译
-                this.lyrics = [];
-                for (let i = 0; i < tempLyrics.length; i++) {
-                    const curr = tempLyrics[i];
-                    const next = tempLyrics[i + 1];
-
-                    // 如果下一句时间和这一句一样，合并
-                    if (next && Math.abs(next.time - curr.time) < 0.2) {
-                        this.lyrics.push({
-                            time: curr.time,
-                            content: curr.content + `<span>${next.content}</span>` // 用 span 包裹翻译
-                        });
-                        i++; // 跳过下一句
-                    } else {
-                        this.lyrics.push(curr);
-                    }
-                }
             }
 
             renderLyrics() {
                 this.lyricList.innerHTML = '';
-                // 加上空的占位行，为了让第一句能居中
                 this.lyricList.innerHTML += '<li class="lyric-line" style="height: 100px;"></li>';
-                
                 this.lyrics.forEach((line, i) => {
                     const li = document.createElement('li');
                     li.className = 'lyric-line';
-                    li.innerHTML = line.content; // 允许 HTML (<span>)
+                    li.innerHTML = line.content; // 允许 <span> 标签生效
                     li.dataset.index = i;
                     this.lyricList.appendChild(li);
                 });
-                
                 this.lyricList.innerHTML += '<li class="lyric-line" style="height: 120px;"></li>';
             }
 
             syncLyrics(currentTime) {
                 if (!this.hasLyrics) return;
-
                 let activeIndex = -1;
                 for (let i = 0; i < this.lyrics.length; i++) {
-                    if (currentTime >= this.lyrics[i].time) {
-                        activeIndex = i;
-                    } else {
-                        break;
-                    }
+                    if (currentTime >= this.lyrics[i].time) activeIndex = i;
+                    else break;
                 }
-
                 if (activeIndex !== -1) {
                     const activeLine = this.lyricList.querySelectorAll('.lyric-line[data-index]')[activeIndex];
                     if (activeLine && !activeLine.classList.contains('active')) {
-                        // 移除旧高亮
                         const oldActive = this.lyricList.querySelector('.active');
                         if (oldActive) oldActive.classList.remove('active');
-                        
-                        // 添加新高亮
                         activeLine.classList.add('active');
                         
-                        // 滚动逻辑
                         const containerHeight = document.getElementById('lyricWrapper').clientHeight;
                         const offset = activeLine.offsetTop - containerHeight / 2 + activeLine.clientHeight / 2;
                         this.lyricList.style.transform = `translateY(-${Math.max(0, offset)}px)`;
@@ -468,9 +478,13 @@
 
             toggleList() { this.playlistBox.classList.toggle('show'); }
             
-            // 切换歌词/封面显示
             toggleVisual() {
                 this.playerCard.classList.toggle('show-lyrics');
+                if (this.playerCard.classList.contains('show-lyrics')) {
+                    this.interactionHint.textContent = "👇 点击返回封面";
+                } else {
+                    this.interactionHint.textContent = "👆 点击封面显示歌词";
+                }
             }
 
             formatTime(s) {
@@ -491,7 +505,6 @@
                 this.modeBtn.onclick = () => this.toggleMode();
                 this.listBtn.onclick = () => this.toggleList();
                 
-                // 视觉区点击切换
                 document.getElementById('discWrapper').onclick = () => this.toggleVisual();
                 document.getElementById('lyricWrapper').onclick = () => this.toggleVisual();
 
@@ -505,7 +518,6 @@
                     const curr = this.audio.currentTime;
                     const total = this.audio.duration;
                     
-                    // 同步歌词
                     this.syncLyrics(curr);
 
                     if (total) {
