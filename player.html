@@ -38,6 +38,7 @@
             box-shadow: var(--shadow);
             display: flex; flex-direction: column; align-items: center;
             position: relative; transition: all 0.3s ease;
+            z-index: 10;
         }
 
         /* 顶部显示区 */
@@ -47,10 +48,19 @@
             margin-bottom: 10px;
         }
 
+        /* 🎵 新增：可视化画布 (背景层) */
+        #visualizer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; /* 在唱片和歌词下面 */
+            opacity: 0.6; /* 半透明，不抢眼 */
+            pointer-events: none;
+        }
+
         .interaction-hint {
             position: absolute; bottom: 0; left: 0; width: 100%;
             text-align: center; font-size: 0.75rem; color: #888;
-            pointer-events: none; opacity: 0.8;
+            pointer-events: none; opacity: 0.8; z-index: 5;
             transition: opacity 0.3s;
         }
 
@@ -61,7 +71,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             position: absolute; transition: opacity 0.4s, transform 0.4s;
             background: linear-gradient(135deg, #ffea7f, #ff87ab);
-            cursor: pointer; bottom: 25px;
+            cursor: pointer; bottom: 25px; z-index: 2; /* 提高层级 */
         }
         .music-disc {
             width: 100%; height: 100%; border-radius: 50%;
@@ -74,7 +84,7 @@
         /* 歌词模式 */
         .lyric-wrapper {
             width: 100%; height: 100%;
-            position: absolute;
+            position: absolute; z-index: 3; /* 提高层级 */
             opacity: 0; pointer-events: none; transform: scale(0.9);
             transition: opacity 0.4s, transform 0.4s;
             text-align: center;
@@ -88,32 +98,24 @@
             transition: transform 0.3s ease-out;
         }
         .lyric-line {
-            color: #666; font-size: 0.95rem; line-height: 1.6;
+            color: #555; font-size: 0.95rem; line-height: 1.6;
             padding: 8px 10px; transition: all 0.3s;
-            min-height: 30px;
+            min-height: 30px; font-weight: 500;
         }
         .lyric-line.active {
-            color: var(--color-pink); font-size: 1.15rem; font-weight: 700;
-            text-shadow: 0 0 10px rgba(255, 135, 171, 0.4);
+            color: var(--color-pink); font-size: 1.2rem; font-weight: 800;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); /* 加重描边防止看不清 */
             transform: scale(1.05);
         }
         .lyric-line.pure-music {
             color: var(--color-stocking); font-weight: bold; font-size: 1rem;
             margin-top: 50px; opacity: 0.8;
         }
-        
-        /* 👇 歌词翻译样式优化 */
         .lyric-line span { 
-            display: block; 
-            font-size: 0.85em; /* 翻译字体稍小 */
-            color: #888;       /* 翻译颜色稍淡 */
-            font-weight: normal; 
-            margin-top: 2px;
+            display: block; font-size: 0.85em; color: #777;
+            font-weight: normal; margin-top: 2px;
         }
-        .lyric-line.active span {
-            color: var(--color-stocking); /* 高亮时翻译变紫色 */
-            font-weight: 500;
-        }
+        .lyric-line.active span { color: var(--color-stocking); font-weight: 600; }
 
         /* 切换状态 */
         .show-lyrics .disc-wrapper { opacity: 0; pointer-events: none; transform: scale(0.8); }
@@ -171,9 +173,14 @@
     <div class="player-card" id="playerCard">
         <!-- 视觉区 -->
         <div class="visual-area">
+            <!-- ✨ 可视化画布 -->
+            <canvas id="visualizer"></canvas>
+            
+            <!-- 唱片 -->
             <div class="disc-wrapper" id="discWrapper">
                 <div class="music-disc" id="disc"></div>
             </div>
+            <!-- 歌词 -->
             <div class="lyric-wrapper" id="lyricWrapper">
                 <ul class="lyric-list" id="lyricList">
                     <li class="lyric-line">P&S Radio Station</li>
@@ -208,7 +215,8 @@
         <div class="playlist-box" id="playlistBox"></div>
     </div>
 
-    <audio id="bgmAudio" preload="none"></audio>
+    <!-- ⚠️ 关键：添加 crossOrigin="anonymous" 允许音频分析 -->
+    <audio id="bgmAudio" preload="none" crossorigin="anonymous"></audio>
 
     <script>
         class MusicPlayer {
@@ -228,6 +236,7 @@
                 this.lyricList = document.getElementById('lyricList');
                 this.playerCard = document.getElementById('playerCard');
                 this.interactionHint = document.getElementById('interactionHint');
+                this.canvas = document.getElementById('visualizer');
 
                 this.playBtn = document.getElementById('playBtn');
                 this.prevBtn = document.getElementById('prevBtn');
@@ -248,14 +257,87 @@
                     { icon: '🔂', name: '单曲', class: 'mode-loop' },
                     { icon: '🔀', name: '随机', class: 'mode-random' }
                 ];
+                
+                // 可视化相关变量
+                this.audioCtx = null;
+                this.analyser = null;
+                this.dataArray = null;
+                this.canvasCtx = this.canvas.getContext('2d');
+                this.isVisualizerInited = false;
 
                 this.init();
             }
 
             async init() {
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
                 this.bindEvents();
                 await this.fetchMusic();
                 this.updateCover(null);
+            }
+
+            // --- ✨ 可视化核心逻辑 ---
+            initVisualizer() {
+                if (this.isVisualizerInited) return;
+                
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.audioCtx = new AudioContext();
+                    const source = this.audioCtx.createMediaElementSource(this.audio);
+                    this.analyser = this.audioCtx.createAnalyser();
+                    
+                    // 连接节点: audio -> analyser -> destination
+                    source.connect(this.analyser);
+                    this.analyser.connect(this.audioCtx.destination);
+                    
+                    this.analyser.fftSize = 128; // 采样精度 (柱子数量)
+                    const bufferLength = this.analyser.frequencyBinCount;
+                    this.dataArray = new Uint8Array(bufferLength);
+                    
+                    this.isVisualizerInited = true;
+                    this.drawVisualizer();
+                } catch(e) {
+                    console.log("Visualizer init failed (CORS or Browser limitation)");
+                }
+            }
+
+            drawVisualizer() {
+                if (!this.isPlaying) return; // 暂停时不绘制以省电
+                
+                requestAnimationFrame(() => this.drawVisualizer());
+
+                this.analyser.getByteFrequencyData(this.dataArray);
+
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                const barWidth = (width / this.dataArray.length) * 2; // 稍微宽一点
+                let barHeight;
+                let x = 0;
+
+                this.canvasCtx.clearRect(0, 0, width, height);
+
+                // 绘制对称波形
+                for(let i = 0; i < this.dataArray.length; i++) {
+                    barHeight = this.dataArray[i] * 0.7; // 缩放高度
+                    
+                    // 渐变色: 粉 -> 青
+                    const r = 255 - (i * 2);
+                    const g = 135 + i;
+                    const b = 171 + (i * 2);
+                    
+                    this.canvasCtx.fillStyle = `rgba(${r},${g},${b}, 0.8)`;
+                    
+                    // 从中间向两边对齐
+                    // 这里简化为底部条形
+                    this.canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
+                    
+                    x += barWidth + 2;
+                }
+            }
+            
+            resizeCanvas() {
+                this.canvas.width = this.canvas.clientWidth;
+                this.canvas.height = this.canvas.clientHeight;
             }
 
             async fetchMusic() {
@@ -315,17 +397,11 @@
                 if (autoPlay) this.play();
             }
 
-            // --- 🎵 升级版歌词解析逻辑 ---
             async loadLyrics(lrcUrl) {
                 this.lyricList.innerHTML = '<li class="lyric-line">Loading...</li>';
                 this.lyrics = [];
                 this.hasLyrics = false;
-
-                if (!lrcUrl) {
-                    this.showPureMusic();
-                    return;
-                }
-
+                if (!lrcUrl) { this.showPureMusic(); return; }
                 try {
                     const res = await fetch(lrcUrl);
                     if (res.ok) {
@@ -333,12 +409,8 @@
                         this.parseLyrics(text);
                         this.renderLyrics();
                         this.hasLyrics = true;
-                    } else {
-                        this.showPureMusic();
-                    }
-                } catch (e) {
-                    this.showPureMusic();
-                }
+                    } else { this.showPureMusic(); }
+                } catch (e) { this.showPureMusic(); }
             }
 
             showPureMusic() {
@@ -349,32 +421,19 @@
             parseLyrics(text) {
                 const lines = text.split('\n');
                 const regex = /^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)$/;
-                
                 this.lyrics = [];
                 let currentLyric = null;
-
                 lines.forEach(line => {
                     const str = line.trim();
                     if (!str) return;
-
                     const matches = str.match(regex);
-
                     if (matches) {
-                        // 1. 这是有时间戳的一行 (原文)
-                        const min = parseInt(matches[1]);
-                        const sec = parseInt(matches[2]);
-                        const ms = parseInt(matches[3]);
-                        const time = min * 60 + sec + ms / 1000;
+                        const time = parseInt(matches[1])*60 + parseInt(matches[2]) + parseInt(matches[3])/1000;
                         const content = matches[4].trim();
-                        
                         currentLyric = { time, content };
                         this.lyrics.push(currentLyric);
                     } else {
-                        // 2. 这是没有时间戳的一行 (翻译)
-                        // 把它作为上一行歌词的翻译附加进去
-                        if (currentLyric) {
-                            currentLyric.content += `<span>${str}</span>`;
-                        }
+                        if (currentLyric) currentLyric.content += `<span>${str}</span>`;
                     }
                 });
             }
@@ -385,7 +444,7 @@
                 this.lyrics.forEach((line, i) => {
                     const li = document.createElement('li');
                     li.className = 'lyric-line';
-                    li.innerHTML = line.content; // 允许 <span> 标签生效
+                    li.innerHTML = line.content;
                     li.dataset.index = i;
                     this.lyricList.appendChild(li);
                 });
@@ -405,14 +464,12 @@
                         const oldActive = this.lyricList.querySelector('.active');
                         if (oldActive) oldActive.classList.remove('active');
                         activeLine.classList.add('active');
-                        
                         const containerHeight = document.getElementById('lyricWrapper').clientHeight;
                         const offset = activeLine.offsetTop - containerHeight / 2 + activeLine.clientHeight / 2;
                         this.lyricList.style.transform = `translateY(-${Math.max(0, offset)}px)`;
                     }
                 }
             }
-            // -------------------------
 
             updateCover(url) {
                 const imgUrl = url || this.defaultCover;
@@ -429,11 +486,20 @@
             }
 
             play() {
+                // 首次播放时初始化可视化器 (浏览器策略限制)
+                if (!this.isVisualizerInited) {
+                    this.initVisualizer();
+                }
+                if (this.audioCtx && this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                
                 this.audio.play().then(() => {
                     this.isPlaying = true;
                     this.updatePlayBtn();
                     this.disc.classList.remove('paused');
                     this.disc.classList.add('rotate');
+                    this.drawVisualizer(); // 开始绘制
                 }).catch(() => {});
             }
 
@@ -517,9 +583,7 @@
                     if (this.isDragging) return;
                     const curr = this.audio.currentTime;
                     const total = this.audio.duration;
-                    
                     this.syncLyrics(curr);
-
                     if (total) {
                         const percent = (curr / total) * 100;
                         this.progressBar.value = percent;
