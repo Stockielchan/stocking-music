@@ -283,6 +283,14 @@
                 <li>即使未看原作也能上手游玩，无门槛体验</li>
                 <li>持续更新中，世界观将不断完善</li>
             </ul>
+            
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--color-pink);">🚀 同层交互卡</h4>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">历时数周开发，第一次采用同层渲染技术。</p>
+            <ul>
+                <li><strong>无缝融合：</strong> UI 与游戏画面在同一层级渲染，交互更自然。</li>
+                <li><strong>功能扩展：</strong> 实现了全屏动态特效、可视化音乐播放器与天气系统。</li>
+                <li><strong>深度适配：</strong> 针对移动端和桌面端分别进行了布局优化。</li>
+            </ul>
         </section>
 
         <!-- 链接与分享 -->
@@ -295,7 +303,7 @@
                     <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                     <span>复制链接</span>
                 </button>
-                <a href="https://discord.com/channels/1134557553011998840/1434325852165902366" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                <a href="https://discord.com/channels/1134557553011998840/1437638507668705330" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
                     <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
                     <span>前往帖子</span>
                 </a>
@@ -346,8 +354,9 @@
             <div class="accordion-content">
                 <h3>项目发展历程</h3>
                 <ul>
-                    <li><strong>v1.0 (首版发布)：</strong> 完成基础世界观与角色设定</li>
-                    <li><strong>v2.0(最新版)：</strong> 完成状态栏，音乐播放器悬浮窗，首页与歌曲热更新</li>
+                    <li><strong>v1.0 (2025/11/11)：</strong> 首版发布，完成基础世界观与角色设定。</li>
+                    <li><strong>v2.0 (2025/11/21)：</strong> 完成状态栏，音乐播放器悬浮窗，首页与歌曲热更新。</li>
+                    <li><strong>v3.0 (2025/12/13)：</strong> 全面升级为同层交互卡。重构底层架构，优化移动端适配，新增动态天气系统、可视化音乐播放器及自定义开场。</li>
                 </ul>
             </div>
         </details>
@@ -360,6 +369,8 @@
                 <div class="credit-item">Leo335346</div>
                 <div class="credit-item">猫猫</div>
                 <div class="credit-item">夜羊</div>
+                <div class="credit-item">伊卡洛斯</div>
+                <div class="credit-item">阿米巴原虫</div>
                 <div class="credit-item">所有游玩本卡的朋友们</div>
             </div>
         </div>
@@ -418,7 +429,7 @@
         /* ==================== UI 交互管理器 ==================== */
         class UIManager {
             constructor() {
-                this.targetUrl = "https://discord.com/channels/1134557553011998840/1434325852165902366";
+                this.targetUrl = "https://discord.com/channels/1134557553011998840/1437638507668705330";
                 this.creditClickCounts = {};
                 this.burstCooldown = 0;
                 this.init();
